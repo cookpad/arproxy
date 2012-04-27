@@ -1,9 +1,10 @@
 require "logger"
 
 module Arproxy
-  autoload :Config
-  autoload :Proxy
-  autoload :Error
+  autoload :Config, "arproxy/config"
+  autoload :ProxyChain, "arproxy/proxy_chain"
+  autoload :Error, "arproxy/error"
+  autoload :Base, "arproxy/base"
 
   module_function
   def configure
@@ -13,28 +14,38 @@ module Arproxy
   end
 
   def enable!
-    @proxy = Proxy.new @config
-    @proxy.enable!
+    @proxy_chain = ProxyChain.new @config
+
+    @config.adapter_class.class_eval do
+      def execute_with_arproxy(sql, name=nil)
+        ::Arproxy.proxy_chain.connection = self
+        ::Arproxy.proxy_chain.head.execute sql, name
+      end
+      alias_method :execute_without_arproxy, :execute
+      alias_method :execute, :execute_with_arproxy
+      ::Arproxy.logger.debug("Arproxy: Enabled")
+    end
   end
 
   def disable!
-    @proxy.disable! if @proxy
+    @config.adapter_class.class_eval do
+      alias_method :execute, :execute_without_arproxy
+      ::Arproxy.logger.debug("Arproxy: Disabled")
+    end
+    @proxy_chain = nil
+    @config = nil
   end
 
   def logger
-    @logger ||= ::Logger.new(STDOUT)
+    @logger ||= begin
+                  @config && @config.logger ||
+                    defined?(::Rails) && ::Rails.logger ||
+                    ::Logger.new(STDOUT)
+                end
   end
 
-  def chain_head
-    @proxy.chain_head
+  def proxy_chain
+    @proxy_chain
   end
 end
 
-__END__
-Arproxy.configure do |config|
-  config.adapter = "mysql2"
-  config.use Hoge
-  config.use Moge
-end
-
-Arproxy.enable!

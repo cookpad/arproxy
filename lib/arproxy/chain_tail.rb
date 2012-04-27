@@ -1,7 +1,11 @@
 module Arproxy
-  class ChainTail
-    def execute(connection, sql, name=nil)
-      connection.execute_without_arproxy(sql, name)
+  class ChainTail < Base
+    def initialize(proxy_chain)
+      self.proxy_chain = proxy_chain
+    end
+
+    def execute(sql, name=nil)
+      self.proxy_chain.connection.execute_without_arproxy sql, name
     end
   end
 end
