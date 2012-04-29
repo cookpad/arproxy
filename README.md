@@ -101,3 +101,4 @@ Then `"User Load"` is the `name`.
 Arproxy is released under the MIT license:
 * www.opensource.org/licenses/MIT
 
+Copyright (c) 2012 Issei Naruta
