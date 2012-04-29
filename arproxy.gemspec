@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name              = 'arproxy'
-  spec.version           = '0.1.0'
+  spec.version           = '0.1.1'
   spec.summary           = 'Proxy between ActiveRecord and DB adapter'
   spec.description       = 'Arproxy is a proxy between ActiveRecord and database adapter'
   spec.files             = Dir.glob("lib/**/*.rb")
