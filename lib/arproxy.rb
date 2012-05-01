@@ -14,6 +14,15 @@ module Arproxy
   end
 
   def enable!
+    if @enabled
+      Arproxy.logger.warn "Arproxy has been already enabled"
+      return
+    end
+
+    unless @config
+      raise Arproxy::Error, "Arproxy should be configured"
+    end
+
     @proxy_chain = ProxyChain.new @config
 
     @config.adapter_class.class_eval do
@@ -25,15 +34,18 @@ module Arproxy
       alias_method :execute, :execute_with_arproxy
       ::Arproxy.logger.debug("Arproxy: Enabled")
     end
+    @enabled = true
   end
 
   def disable!
-    @config.adapter_class.class_eval do
-      alias_method :execute, :execute_without_arproxy
-      ::Arproxy.logger.debug("Arproxy: Disabled")
+    if @config
+      @config.adapter_class.class_eval do
+        alias_method :execute, :execute_without_arproxy
+        ::Arproxy.logger.debug("Arproxy: Disabled")
+      end
     end
     @proxy_chain = nil
-    @config = nil
+    @enabled = false
   end
 
   def logger

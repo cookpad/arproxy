@@ -33,6 +33,18 @@ describe Arproxy do
     Arproxy.disable!
   end
 
+  context "with a proxy" do
+    before do
+      Arproxy.configure do |config|
+        config.adapter = "dummy"
+        config.use ProxyA
+      end
+      Arproxy.enable!
+    end
+
+    it { should == {:sql => "SQL_A", :name => "NAME_A"} }
+  end
+
   context "with 2 proxies" do
     before do
       Arproxy.configure do |config|
@@ -57,6 +69,60 @@ describe Arproxy do
     end
 
     it { should == {:sql => "SQL_A_B1", :name => "NAME_A_B1"} }
+  end
+
+  context do
+    before do
+      Arproxy.configure do |config|
+        config.adapter = "dummy"
+        config.use ProxyA
+      end
+    end
+
+    context "enable -> disable" do
+      before do
+        Arproxy.enable!
+        Arproxy.disable!
+      end
+      it { should == {:sql => "SQL", :name => "NAME"} }
+    end
+
+    context "enable -> enable" do
+      before do
+        Arproxy.enable!
+        Arproxy.enable!
+      end
+      it { should == {:sql => "SQL_A", :name => "NAME_A"} }
+    end
+
+    context "enable -> disable -> disable" do
+      before do
+        Arproxy.enable!
+        Arproxy.disable!
+        Arproxy.disable!
+      end
+      it { should == {:sql => "SQL", :name => "NAME"} }
+    end
+
+    context "enable -> disable -> enable" do
+      before do
+        Arproxy.enable!
+        Arproxy.disable!
+        Arproxy.enable!
+      end
+      it { should == {:sql => "SQL_A", :name => "NAME_A"} }
+    end
+
+    context "re-configure" do
+      before do
+        Arproxy.configure do |config|
+          config.adapter = "dummy"
+          config.use ProxyB
+        end
+        Arproxy.enable!
+      end
+      it { should == {:sql => "SQL_B", :name => "NAME_B"} }
+    end
   end
 
 end
