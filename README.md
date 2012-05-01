@@ -1,8 +1,9 @@
 ## Welcome to Arproxy
-Arproxy is a proxy between ActiveRecord and Database adapters. You can make a custom proxy what analyze and/or modify the SQLs before DB adapter executes them.
+Arproxy is a proxy between ActiveRecord and Database adapters.
+You can make a custom proxy what analyze and/or modify SQLs before DB adapter executes them.
 
 ## Getting Started
-Write your proxy like this:
+Write your proxy and its configurations in Rails' config/initializers:
 
 ```ruby
 class QueryTracer < Arproxy::Base
@@ -12,11 +13,7 @@ class QueryTracer < Arproxy::Base
     super(sql, name)
   end
 end
-```
 
-And write Arproxy configuration in Rails' config/initializers:
-
-```ruby
 Arproxy.configure do |config|
   config.adapter = "mysql2" # A DB Apdapter name which is used in your database.yml
   config.use QueryTracer
@@ -24,7 +21,7 @@ end
 Arproxy.enable!
 ```
 
-So you can see the backtrace of SQLs in the Rails' log.
+Then you can see the backtrace of SQLs in the Rails' log.
 
 ```ruby
 # In your Rails code
