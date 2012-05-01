@@ -86,6 +86,19 @@ class CommentAdder < Arproxy::Base
 end
 ```
 
+### Readonly Access
+```ruby
+class Readonly < Arproxy::Base
+  def execute(sql, name=nil)
+    if sql =~ /^(SELECT|SET|SHOW|DESCRIBE)\b/
+      super sql, name
+    else
+      Rails.logger.warn "#{name} (BLOCKED) #{sql}"
+    end
+  end
+end
+```
+
 ## Appendix
 ### What the `name' argument is
 In the Rails' log you may see queries like this:
