@@ -1,4 +1,5 @@
 require "logger"
+require "active_record"
 
 module Arproxy
   autoload :Config, "arproxy/config"
@@ -22,6 +23,9 @@ module Arproxy
     unless @config
       raise Arproxy::Error, "Arproxy should be configured"
     end
+
+    # for lazy loading
+    ActiveRecord::Base
 
     @proxy_chain = ProxyChain.new @config
 
