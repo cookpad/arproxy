@@ -14,8 +14,15 @@ module Arproxy
 
     def adapter_class
       raise Arproxy::Error, "config.adapter must be set" unless @adapter
-      camelized_adapter_name = @adapter.split("_").map(&:capitalize).join
-      eval "::ActiveRecord::ConnectionAdapters::#{camelized_adapter_name}Adapter"
+      case @adapter
+      when String
+        camelized_adapter_name = @adapter.split("_").map(&:capitalize).join
+        eval "::ActiveRecord::ConnectionAdapters::#{camelized_adapter_name}Adapter"
+      when Class
+        @adapter
+      else
+        raise Arproxy::Error, "unexpected config.adapter: #{@adapter}"
+      end
     end
   end
 end
