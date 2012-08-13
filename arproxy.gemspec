@@ -8,5 +8,5 @@ Gem::Specification.new do |spec|
   spec.email             = 'naruta@cookpad.com'
   spec.homepage          = 'https://github.com/cookpad/arproxy'
   spec.has_rdoc          = false
-  spec.add_dependency 'activerecord', '~> 3.0'
+  spec.add_dependency 'activerecord', '>= 3.0.0'
 end
