@@ -35,6 +35,7 @@ describe Arproxy do
 
   context "with a proxy" do
     before do
+      Arproxy.clear_configuration
       Arproxy.configure do |config|
         config.adapter = "dummy"
         config.use ProxyA
@@ -47,6 +48,7 @@ describe Arproxy do
 
   context "with 2 proxies" do
     before do
+      Arproxy.clear_configuration
       Arproxy.configure do |config|
         config.adapter = "dummy"
         config.use ProxyA
@@ -60,6 +62,7 @@ describe Arproxy do
 
   context "with 2 proxies which have an option" do
     before do
+      Arproxy.clear_configuration
       Arproxy.configure do |config|
         config.adapter = "dummy"
         config.use ProxyA
@@ -73,6 +76,7 @@ describe Arproxy do
 
   context do
     before do
+      Arproxy.clear_configuration
       Arproxy.configure do |config|
         config.adapter = "dummy"
         config.use ProxyA
@@ -116,12 +120,11 @@ describe Arproxy do
     context "re-configure" do
       before do
         Arproxy.configure do |config|
-          config.adapter = "dummy"
           config.use ProxyB
         end
         Arproxy.enable!
       end
-      it { should == {:sql => "SQL_B", :name => "NAME_B"} }
+      it { should == {:sql => "SQL_A_B", :name => "NAME_A_B"} }
     end
   end
 

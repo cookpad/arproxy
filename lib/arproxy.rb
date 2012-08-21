@@ -1,21 +1,24 @@
 require "logger"
 require "active_record"
+require "arproxy/base"
+require "arproxy/config"
+require "arproxy/proxy_chain"
+require "arproxy/error"
 
 module Arproxy
-  autoload :Config, "arproxy/config"
-  autoload :ProxyChain, "arproxy/proxy_chain"
-  autoload :Error, "arproxy/error"
-  autoload :Base, "arproxy/base"
 
   module_function
+  def clear_configuration
+    @config = Config.new
+  end
+
   def configure
-    config = Config.new
-    yield config
-    @config = config
+    clear_configuration unless @config
+    yield @config
   end
 
   def enable!
-    if @enabled
+    if enable?
       Arproxy.logger.warn "Arproxy has been already enabled"
       return
     end
@@ -25,31 +28,37 @@ module Arproxy
     end
 
     # for lazy loading
-    ActiveRecord::Base
+    ::ActiveRecord::Base
 
     @proxy_chain = ProxyChain.new @config
+    @proxy_chain.enable!
 
-    @config.adapter_class.class_eval do
-      def execute_with_arproxy(sql, name=nil)
-        ::Arproxy.proxy_chain.connection = self
-        ::Arproxy.proxy_chain.head.execute sql, name
-      end
-      alias_method :execute_without_arproxy, :execute
-      alias_method :execute, :execute_with_arproxy
-      ::Arproxy.logger.debug("Arproxy: Enabled")
-    end
     @enabled = true
   end
 
   def disable!
-    if @config
-      @config.adapter_class.class_eval do
-        alias_method :execute, :execute_without_arproxy
-        ::Arproxy.logger.debug("Arproxy: Disabled")
-      end
+    unless enable?
+      Arproxy.logger.warn "Arproxy is not enabled yet"
+      return
     end
-    @proxy_chain = nil
+
+    if @proxy_chain
+      @proxy_chain.disable!
+      @proxy_chain = nil
+    end
     @enabled = false
+  end
+
+  def enable?
+    !!@enabled
+  end
+
+  def reenable!
+    if enable?
+      @proxy_chain.reenable!
+    else
+      enable!
+    end
   end
 
   def logger
@@ -64,4 +73,3 @@ module Arproxy
     @proxy_chain
   end
 end
-
