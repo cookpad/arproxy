@@ -14,7 +14,7 @@ module Arproxy
       @tail = ChainTail.new self
       @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
-        proxy = cls.new *options
+        proxy = cls.new(*options)
         proxy.proxy_chain = self
         proxy.next_proxy = next_proxy
         proxy
