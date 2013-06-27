@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cookpad/arproxy.png)](https://travis-ci.org/cookpad/arproxy)
+
 ## Welcome to Arproxy
 Arproxy is a proxy between ActiveRecord and Database adapters.
 You can make a custom proxy what analyze and/or modify SQLs before DB adapter executes them.
