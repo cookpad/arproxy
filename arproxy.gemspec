@@ -1,3 +1,4 @@
+$:.push File.expand_path("../lib", __FILE__)
 require 'arproxy/version'
 
 Gem::Specification.new do |spec|
