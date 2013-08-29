@@ -11,7 +11,7 @@ module Arproxy
     end
 
     def setup
-      @tail = ChainTail.new self
+      @tail = ChainTail.new(self)
       @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
         proxy = cls.new(*options)
@@ -22,6 +22,11 @@ module Arproxy
     end
     private :setup
 
+    def proxy_methods
+      [:execute]+@config.extra_methods
+    end
+    private :proxy_methods
+
     def reenable!
       disable!
       setup
@@ -29,22 +34,26 @@ module Arproxy
     end
 
     def enable!
-      @config.adapter_class.class_eval do
-        def execute_with_arproxy(sql, name=nil)
-          ::Arproxy.proxy_chain.connection = self
-          ::Arproxy.proxy_chain.head.execute sql, name
+      proxy_methods.each do |name|
+        @config.adapter_class.class_eval do
+          define_method "#{name}_with_arproxy" do |*args|
+            ::Arproxy.proxy_chain.connection = self
+            ::Arproxy.proxy_chain.head.send(name, *args)
+          end
+          alias_method "#{name}_without_arproxy", name
+          alias_method name, "#{name}_with_arproxy"
         end
-        alias_method :execute_without_arproxy, :execute
-        alias_method :execute, :execute_with_arproxy
-        ::Arproxy.logger.debug("Arproxy: Enabled")
       end
+      ::Arproxy.logger.debug("Arproxy: Enabled")
     end
 
     def disable!
-      @config.adapter_class.class_eval do
-        alias_method :execute, :execute_without_arproxy
-        ::Arproxy.logger.debug("Arproxy: Disabled")
+      proxy_methods.each do |name|
+        @config.adapter_class.class_eval do
+          alias_method name, "#{name}_without_arproxy"
+        end
       end
+      ::Arproxy.logger.debug("Arproxy: Disabled")
     end
   end
 end
