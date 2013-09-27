@@ -3,7 +3,6 @@ module Arproxy
 
   class ProxyChain
     attr_reader :head, :tail
-    attr_accessor :connection
 
     def initialize(config)
       @config = config
@@ -37,8 +36,7 @@ module Arproxy
       proxy_methods.each do |name|
         @config.adapter_class.class_eval do
           define_method "#{name}_with_arproxy" do |*args|
-            ::Arproxy.proxy_chain.connection = self
-            ::Arproxy.proxy_chain.head.send(name, *args)
+            ::Arproxy.proxy_chain.head.send(name, self, *args)
           end
           alias_method "#{name}_without_arproxy", name
           alias_method name, "#{name}_with_arproxy"

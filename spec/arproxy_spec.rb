@@ -2,12 +2,12 @@ require "spec_helper"
 
 describe Arproxy do
   class ProxyA < Arproxy::Base
-    def execute(sql, name)
-      super "#{sql}_A", "#{name}_A"
+    def execute(connection, sql, name)
+      super connection, "#{sql}_A", "#{name}_A"
     end
 
-    def exec_query(sql, name, binds)
-      super "#{sql}_A", "#{name}_A", binds
+    def exec_query(connection, sql, name, binds)
+      super connection, "#{sql}_A", "#{name}_A", binds
     end
   end
 
@@ -16,8 +16,8 @@ describe Arproxy do
       @opt = opt
     end
 
-    def execute(sql, name)
-      super "#{sql}_B#{@opt}", "#{name}_B#{@opt}"
+    def execute(connection, sql, name)
+      super connection, "#{sql}_B#{@opt}", "#{name}_B#{@opt}"
     end
   end
 
