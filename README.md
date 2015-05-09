@@ -101,6 +101,27 @@ class Readonly < Arproxy::Base
 end
 ```
 
+## Use plug-in
+
+```ruby
+# any_gem/lib/arproxy/plugin/my_plugin
+module Arproxy::Plugin
+  class MyPlugin < Arproxy::Base
+    Arproxy::Plugin.register(:my_plugin, self)
+
+    def execute(sql, name=nil)
+      # Any processing
+    end
+  end
+end
+```
+
+```ruby
+Arproxy.configure do |config|
+  config.plugin :my_plugin
+end
+```
+
 ## Appendix
 ### What the `name' argument is
 In the Rails' log you may see queries like this:

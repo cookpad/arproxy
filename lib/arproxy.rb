@@ -4,6 +4,7 @@ require "arproxy/base"
 require "arproxy/config"
 require "arproxy/proxy_chain"
 require "arproxy/error"
+require "arproxy/plugin"
 
 module Arproxy
 

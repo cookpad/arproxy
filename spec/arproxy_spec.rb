@@ -1,6 +1,10 @@
 require "spec_helper"
 
 describe Arproxy do
+  before do
+    allow(Arproxy).to receive(:logger) { Logger.new('/dev/null') }
+  end
+
   class ProxyA < Arproxy::Base
     def execute(sql, name)
       super "#{sql}_A", "#{name}_A"
@@ -126,6 +130,19 @@ describe Arproxy do
       end
       it { should == {:sql => "SQL_A_B", :name => "NAME_A_B"} }
     end
+  end
+
+  context "use a plug-in" do
+    before do
+      Arproxy.clear_configuration
+      Arproxy.configure do |config|
+        config.adapter = "dummy"
+        config.plugin :test, :option_a, :option_b
+      end
+      Arproxy.enable!
+    end
+
+    it { should == {:sql => "SQL_PLUGIN", :name => "NAME_PLUGIN", :options => [:option_a, :option_b]} }
   end
 
 end
