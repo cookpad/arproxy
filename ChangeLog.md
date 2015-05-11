@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.0
+* Arproxy plugin: an easy way to make reusable proxies as gems (#6)
+  Thanks to @winebarrel
+
 ## 0.1.3
 * Silence some deprecation warnings (#1)
   Thanks to @amatsuda
