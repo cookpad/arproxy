@@ -12,6 +12,11 @@ module Arproxy
       @proxies << [proxy_class, options]
     end
 
+    def plugin(name, *options)
+      plugin_class = Plugin.get(name)
+      use(plugin_class, *options)
+    end
+
     def adapter_class
       raise Arproxy::Error, "config.adapter must be set" unless @adapter
       case @adapter
