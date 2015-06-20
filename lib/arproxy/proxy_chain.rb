@@ -3,7 +3,6 @@ module Arproxy
 
   class ProxyChain
     attr_reader :head, :tail
-    attr_accessor :connection
 
     def initialize(config)
       @config = config
@@ -46,5 +45,14 @@ module Arproxy
         ::Arproxy.logger.debug("Arproxy: Disabled")
       end
     end
+
+    def connection
+      Thread.current[:arproxy_connection]
+    end
+
+    def connection= val
+      Thread.current[:arproxy_connection] = val
+    end
+
   end
 end
