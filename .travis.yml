@@ -10,5 +10,12 @@ gemfile:
   - gemfiles/ar_4.0.gemfile
   - gemfiles/ar_4.1.gemfile
   - gemfiles/ar_4.2.gemfile
+matrix:
+  fast_finish: true
+  allow_failures:
+    - rvm: 2.1.8
+      gemfile: gemfiles/ar_4.1.gemfile
+    - rvm: 2.1.8
+      gemfile: gemfiles/ar_4.2.gemfile
 before_install: gem install bundler -v 1.11.2
 script: bundle exec rake spec
