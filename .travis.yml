@@ -1,7 +1,13 @@
 language: ruby
 rvm:
-  - 1.9.3
   - 2.0.0
-  - 2.1.4
-  - 2.2.0
-script: 'bundle exec rspec spec'
+  - 2.1.8
+  - 2.2.4
+  - 2.3.0
+  - jruby-head
+gemfile:
+  - ar_3.2.gemfile
+  - ar_4.0.gemfile
+  - ar_4.1.gemfile
+  - ar_4.2.gemfile
+before_install: gem install bundler -v 1.11.2

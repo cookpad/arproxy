@@ -11,5 +11,13 @@ Gem::Specification.new do |spec|
   spec.email             = 'naruta@cookpad.com'
   spec.homepage          = 'https://github.com/cookpad/arproxy'
   spec.has_rdoc          = false
-  spec.add_dependency 'activerecord', '>= 3.0.0'
+  spec.license           = "MIT"
+  spec.require_paths     = ["lib"]
+
+  spec.add_dependency 'activerecord', '>= 3.2.0'
+
+  spec.add_development_dependency "bundler", "~> 1.11"
+  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "appraisal", "~> 2.1"
 end
