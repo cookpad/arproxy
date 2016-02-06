@@ -145,4 +145,28 @@ describe Arproxy do
     it { should == {:sql => "SQL_PLUGIN", :name => "NAME_PLUGIN", :options => [:option_a, :option_b]} }
   end
 
+  context "ProxyChain thread-safety" do
+    class ProxyWithConnectionId < Arproxy::Base
+      def execute(sql, name)
+        sleep 0.1
+        super "#{sql} /* connection_id=#{self.proxy_chain.connection.object_id} */", name
+      end
+    end
+
+    before do
+      Arproxy.clear_configuration
+      Arproxy.configure do |config|
+        config.adapter = "dummy"
+        config.use ProxyWithConnectionId
+      end
+      Arproxy.enable!
+    end
+
+    context "with two threads" do
+      let!(:thr1) { Thread.new { connection.dup.execute 'SELECT 1' } }
+      let!(:thr2) { Thread.new { connection.dup.execute 'SELECT 1' } }
+
+      it { expect(thr1.value).not_to eq(thr2.value) }
+    end
+  end
 end
