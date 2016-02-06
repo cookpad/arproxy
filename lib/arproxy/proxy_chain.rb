@@ -50,7 +50,7 @@ module Arproxy
       Thread.current[:arproxy_connection]
     end
 
-    def connection= val
+    def connection=(val)
       Thread.current[:arproxy_connection] = val
     end
 
