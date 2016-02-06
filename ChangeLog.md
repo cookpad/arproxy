@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.1
+* Make ProxyChain thread-safe (#7)
+  Thanks to @saidie
+
 ## 0.2.0
 * Arproxy plugin: an easy way to make reusable proxies as gems (#6)
   Thanks to @winebarrel
