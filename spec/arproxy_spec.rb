@@ -6,8 +6,12 @@ describe Arproxy do
   end
 
   class ProxyA < Arproxy::Base
-    def execute(sql, name)
-      super "#{sql}_A", "#{name}_A"
+    def execute(connection, sql, name)
+      super connection, "#{sql}_A", "#{name}_A"
+    end
+
+    def exec_query(connection, sql, name, binds)
+      super connection, "#{sql}_A", "#{name}_A", binds
     end
   end
 
@@ -16,8 +20,8 @@ describe Arproxy do
       @opt = opt
     end
 
-    def execute(sql, name)
-      super "#{sql}_B#{@opt}", "#{name}_B#{@opt}"
+    def execute(connection, sql, name)
+      super connection, "#{sql}_B#{@opt}", "#{name}_B#{@opt}"
     end
   end
 
@@ -27,11 +31,15 @@ describe Arproxy do
         def execute(sql, name = nil)
           {:sql => sql, :name => name}
         end
+        def exec_query(sql, name = nil, binds=[])
+          {:sql => sql, :name => name, :binds => binds}
+        end
       end
     end
   end
 
   let(:connection) { ::ActiveRecord::ConnectionAdapters::DummyAdapter.new }
+  subject(:exec_query) { connection.exec_query "SQL", "NAME", [1] }
   subject { connection.execute "SQL", "NAME" }
   after(:each) do
     Arproxy.disable!
@@ -48,6 +56,20 @@ describe Arproxy do
     end
 
     it { should == {:sql => "SQL_A", :name => "NAME_A"} }
+  end
+
+  context "with a proxy exec_query" do
+    before do
+      Arproxy.clear_configuration
+      Arproxy.configure do |config|
+        config.adapter = "dummy"
+        config.extra_methods = [:exec_query]
+        config.use ProxyA
+      end
+      Arproxy.enable!
+    end
+
+    it { exec_query.should == {:sql => "SQL_A", :name => "NAME_A", :binds => [1]} }
   end
 
   context "with 2 proxies" do
@@ -83,6 +105,7 @@ describe Arproxy do
       Arproxy.clear_configuration
       Arproxy.configure do |config|
         config.adapter = "dummy"
+        config.extra_methods = [:exec_query]
         config.use ProxyA
       end
     end
@@ -93,6 +116,14 @@ describe Arproxy do
         Arproxy.disable!
       end
       it { should == {:sql => "SQL", :name => "NAME"} }
+    end
+
+    context "enable -> disable for exec_query" do
+      before do
+        Arproxy.enable!
+        Arproxy.disable!
+      end
+      it { exec_query.should == {:sql => "SQL", :name => "NAME", :binds => [1]} }
     end
 
     context "enable -> enable" do

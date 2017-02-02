@@ -4,8 +4,8 @@ module Arproxy
       self.proxy_chain = proxy_chain
     end
 
-    def execute(sql, name=nil)
-      self.proxy_chain.connection.execute_without_arproxy sql, name
+    def method_missing(name, connection, *args)
+      connection.send("#{name}_without_arproxy", *args)
     end
   end
 end

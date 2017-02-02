@@ -2,9 +2,11 @@ module Arproxy
   class Config
     attr_accessor :adapter, :logger
     attr_reader :proxies
+    attr_accessor :extra_methods
 
     def initialize
       @proxies = []
+      @extra_methods = []
     end
 
     def use(proxy_class, *options)
