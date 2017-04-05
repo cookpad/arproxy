@@ -5,6 +5,9 @@ module Arproxy
 
     def initialize
       @proxies = []
+      if defined?(Rails)
+        @adapter = Rails.application.config_for(:database)["adapter"]
+      end
     end
 
     def use(proxy_class, *options)
