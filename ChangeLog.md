@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.3
+* Set Arproxy::Config#adapter from database.yml automatically (#11)
+  Thanks to @k0kubun
+
 ## 0.2.2
 * Start supporting activerecord-5.0 and stop 3.2-4.1
 
