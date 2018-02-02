@@ -7,6 +7,7 @@ require "arproxy/error"
 require "arproxy/plugin"
 
 module Arproxy
+  @config = @enabled = nil
 
   module_function
   def clear_configuration
