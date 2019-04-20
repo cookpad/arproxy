@@ -10,7 +10,6 @@ Gem::Specification.new do |spec|
   spec.author            = 'Issei Naruta'
   spec.email             = 'naruta@cookpad.com'
   spec.homepage          = 'https://github.com/cookpad/arproxy'
-  spec.has_rdoc          = false
   spec.license           = "MIT"
   spec.require_paths     = ["lib"]
 
