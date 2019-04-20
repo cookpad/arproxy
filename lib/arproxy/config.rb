@@ -1,3 +1,6 @@
+require "active_record"
+require "active_record/base"
+
 module Arproxy
   class Config
     attr_accessor :adapter, :logger
