@@ -1,4 +1,7 @@
 # Change Log
+## 0.2.5
+* Fix against warnings around `::` in void context (#12)
+
 ## 0.2.4
 * Fix against warnings around uninitialized instance variables (#12)
   Thanks to @amatsuda
