@@ -1,13 +1,13 @@
 language: ruby
 rvm:
-  - 2.2.7
-  - 2.3.4
-  - 2.4.1
-  - jruby-head
+  - 2.4
+  - 2.5
+  - 2.6
 gemfile:
   - gemfiles/ar_4.2.gemfile
-  - gemfiles/ar_5.0.gemfile
+  - gemfiles/ar_5.2.gemfile
+  - gemfiles/ar_6.0.gemfile
 matrix:
   fast_finish: true
-before_install: gem install bundler -v 1.11.2
+before_install: gem install bundler -v 2.0.1
 script: bundle exec rake spec
