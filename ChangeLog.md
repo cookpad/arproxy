@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.4
+* Fix against warnings around uninitialized instance variables (#12)
+  Thanks to @amatsuda
+
 ## 0.2.3
 * Set Arproxy::Config#adapter from database.yml automatically (#11)
   Thanks to @k0kubun
