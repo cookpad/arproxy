@@ -23,6 +23,8 @@ module Arproxy
     end
 
     def adapter_class
+      require 'active_record/base'
+
       raise Arproxy::Error, "config.adapter must be set" unless @adapter
       case @adapter
       when String, Symbol
