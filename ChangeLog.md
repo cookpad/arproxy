@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.6
+* Support sqlite3 adapter (#15)
+  Thanks to @hakatashi
+
 ## 0.2.5
 * Fix against warnings around `::` in void context (#12)
 
