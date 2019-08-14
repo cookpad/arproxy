@@ -34,4 +34,35 @@ describe Arproxy::Config do
       it { should == nil }
     end
   end
+
+  describe "#adapter_class" do
+    subject { config.adapter_class }
+    let(:config) { Arproxy::Config.new }
+
+    before do
+      config.adapter = adapter
+    end
+
+    context "when adapter is configured as 'mysql2'" do
+      let(:adapter) { "mysql2" }
+      let(:mysql2_class) { Class.new }
+
+      before do
+        stub_const("ActiveRecord::ConnectionAdapters::Mysql2Adapter", mysql2_class)
+      end
+
+      it { should == mysql2_class }
+    end
+
+    context "when adapter is configured as 'sqlite3'" do
+      let(:adapter) { "sqlite3" }
+      let(:sqlite3_class) { Class.new }
+
+      before do
+        stub_const("ActiveRecord::ConnectionAdapters::SQLite3Adapter", sqlite3_class)
+      end
+
+      it { should == sqlite3_class }
+    end
+  end
 end
