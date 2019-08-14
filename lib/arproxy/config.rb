@@ -28,6 +28,9 @@ module Arproxy
       case @adapter
       when String, Symbol
         camelized_adapter_name = @adapter.to_s.split("_").map(&:capitalize).join
+        if camelized_adapter_name == "Sqlite3"
+          camelized_adapter_name = "SQLite3"
+        end
         eval "::ActiveRecord::ConnectionAdapters::#{camelized_adapter_name}Adapter"
       when Class
         @adapter
