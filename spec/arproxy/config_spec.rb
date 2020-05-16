@@ -64,5 +64,16 @@ describe Arproxy::Config do
 
       it { should == sqlite3_class }
     end
+
+    context "when adapter is configured as 'sqlserver'" do
+      let(:adapter) { "sqlserver" }
+      let(:sqlserver_class) { Class.new }
+
+      before do
+        stub_const("ActiveRecord::ConnectionAdapters::SQLServerAdapter", sqlserver_class)
+      end
+
+      it { should == sqlserver_class }
+    end
   end
 end
