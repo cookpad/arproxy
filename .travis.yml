@@ -4,14 +4,19 @@ rvm:
   - 2.4
   - 2.5
   - 2.6
+  - 2.7
 gemfile:
   - gemfiles/ar_4.2.gemfile
   - gemfiles/ar_5.2.gemfile
   - gemfiles/ar_6.0.gemfile
 matrix:
   allow_failures:
-    - gemfile: gemfiles/ar_6.0.gemfile
+    # Rails 6 requires Ruby 2.5 or newer. ref: https://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#ruby-versions
     - rvm: 2.4
+      gemfile: gemfiles/ar_6.0.gemfile
+    # BigDecimal 2.0 does not support `BigDecimal.new`. ref: https://github.com/ruby/bigdecimal#which-version-should-you-select
+    - rvm: 2.7
+      gemfile: gemfiles/ar_4.2.gemfile
   fast_finish: true
 before_install:
   - gem update --system
