@@ -27,15 +27,26 @@ module Arproxy
       raise Arproxy::Error, "config.adapter must be set" unless @adapter
       case @adapter
       when String, Symbol
-        camelized_adapter_name = @adapter.to_s.split("_").map(&:capitalize).join
-        if camelized_adapter_name == "Sqlite3"
-          camelized_adapter_name = "SQLite3"
-        end
         eval "::ActiveRecord::ConnectionAdapters::#{camelized_adapter_name}Adapter"
       when Class
         @adapter
       else
         raise Arproxy::Error, "unexpected config.adapter: #{@adapter}"
+      end
+    end
+
+    private
+
+    def camelized_adapter_name
+      adapter_name = @adapter.to_s.split("_").map(&:capitalize).join
+
+      case adapter_name
+      when 'Sqlite3'
+        'SQLite3'
+      when 'Sqlserver'
+        'SQLServer'
+      else
+        adapter_name
       end
     end
   end
