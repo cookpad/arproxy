@@ -1,4 +1,10 @@
 # Change Log
+## 0.2.7
+* Support sqlserver adapter (#16)
+  Note that it supports `AR::B.connection.execute` but not `exec_query` yet.
+  See: https://github.com/cookpad/arproxy/pull/16
+  Thanks to @takanamito
+
 ## 0.2.6
 * Support sqlite3 adapter (#15)
   Thanks to @hakatashi
