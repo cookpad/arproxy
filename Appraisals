@@ -7,5 +7,5 @@ appraise 'ar-5.2' do
 end
 
 appraise 'ar-6.0' do
-  gem 'activerecord', '~> 6.0.0.beta'
+  gem 'activerecord', '~> 6.0.0'
 end
