@@ -7,7 +7,7 @@ rvm:
 gemfile:
   - gemfiles/ar_4.2.gemfile
   - gemfiles/ar_5.2.gemfile
-  - gemfiles/ar_6.0.gemfile
+  - gemfiles/ar_6.1.gemfile
 matrix:
   allow_failures:
     # BigDecimal 2.0 does not support `BigDecimal.new`. ref: https://github.com/ruby/bigdecimal#which-version-should-you-select
