@@ -1,9 +1,9 @@
 language: ruby
 sudo: false
 rvm:
-  - 2.5
   - 2.6
   - 2.7
+  - 3.0
 gemfile:
   - gemfiles/ar_4.2.gemfile
   - gemfiles/ar_5.2.gemfile
