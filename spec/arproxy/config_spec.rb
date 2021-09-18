@@ -75,5 +75,16 @@ describe Arproxy::Config do
 
       it { should == sqlserver_class }
     end
+
+    context "when adapter is configured as 'postgresql'" do
+      let(:adapter) { "postgresql" }
+      let(:postgresql_class) { Class.new }
+
+      before do
+        stub_const("ActiveRecord::ConnectionAdapters::PostgreSQLAdapter", postgresql_class)
+      end
+
+      it { should == postgresql_class }
+    end
   end
 end

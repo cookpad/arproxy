@@ -45,6 +45,8 @@ module Arproxy
         'SQLite3'
       when 'Sqlserver'
         'SQLServer'
+      when 'Postgresql'
+        'PostgreSQL'
       else
         adapter_name
       end
