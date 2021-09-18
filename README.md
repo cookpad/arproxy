@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cookpad/arproxy.png)](https://travis-ci.org/cookpad/arproxy)
+[![Build Status](https://github.com/cookpad/arproxy/actions/workflows/ruby.yml/badge.svg)](https://github.com/cookpad/arproxy/actions)
 
 ## Welcome to Arproxy
 Arproxy is a proxy between ActiveRecord and Database adapters.
