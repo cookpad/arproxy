@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.8
+* Support postgresql adapter (#19)
+  Thanks to @jhnvz
+
 ## 0.2.7
 * Support sqlserver adapter (#16)
   Note that it supports `AR::B.connection.execute` but not `exec_query` yet.
