@@ -29,9 +29,9 @@ module Arproxy
 
     def enable!
       @config.adapter_class.class_eval do
-        def execute_with_arproxy(sql, name=nil)
+        def execute_with_arproxy(sql, name=nil, **kwargs)
           ::Arproxy.proxy_chain.connection = self
-          ::Arproxy.proxy_chain.head.execute sql, name
+          ::Arproxy.proxy_chain.head.execute sql, name, **kwargs
         end
         alias_method :execute_without_arproxy, :execute
         alias_method :execute, :execute_with_arproxy
