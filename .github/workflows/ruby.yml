@@ -26,6 +26,8 @@ jobs:
             ruby-version: 2.7
           - gemfile: ar_4.2
             ruby-version: 3.0
+          - gemfile: ar_7.0
+            ruby-version: 2.6
 
     steps:
     - uses: actions/checkout@v2
