@@ -1,5 +1,5 @@
 # Change Log
-## 0.2.8
+## 0.2.9
 * Support ActiveRecord 7.0 (#21)
   Thanks to @r7kamura
 
