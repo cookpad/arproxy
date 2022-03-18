@@ -1,5 +1,9 @@
 # Change Log
 ## 0.2.8
+* Support ActiveRecord 7.0 (#21)
+  Thanks to @r7kamura
+
+## 0.2.8
 * Support postgresql adapter (#19)
   Thanks to @jhnvz
 
