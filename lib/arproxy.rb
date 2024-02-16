@@ -4,6 +4,8 @@ require "arproxy/config"
 require "arproxy/proxy_chain"
 require "arproxy/error"
 require "arproxy/plugin"
+require "active_record"
+require "active_support"
 
 module Arproxy
   @config = @enabled = nil
@@ -28,8 +30,15 @@ module Arproxy
       raise Arproxy::Error, "Arproxy should be configured"
     end
 
-    @proxy_chain = ProxyChain.new @config
-    @proxy_chain.enable!
+    if ActiveRecord.autoload? :Base
+      ActiveSupport.on_load(:active_record, yield: true) do
+        @proxy_chain = ProxyChain.new @config
+        @proxy_chain.enable!
+      end
+    else
+      @proxy_chain = ProxyChain.new @config
+      @proxy_chain.enable!
+    end
 
     @enabled = true
   end
