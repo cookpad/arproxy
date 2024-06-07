@@ -9,10 +9,19 @@ Write your proxy and its configurations in Rails' config/initializers:
 
 ```ruby
 class QueryTracer < Arproxy::Base
+  # for your ActiveRecored version <= 7.0.x
   def execute(sql, name=nil)
     Rails.logger.debug sql
     Rails.logger.debug caller(1).join("\n")
     super(sql, name)
+  end
+
+  # for your ActiveRecored version >= 7.1.x
+  private
+  def raw_execute(sql, name, **kwargs)
+    Rails.logger.debug sql
+    Rails.logger.debug caller(1).join("\n")
+    super(sql, name, **kwargs)
   end
 end
 
