@@ -14,6 +14,14 @@ class QueryTracer < Arproxy::Base
     Rails.logger.debug caller(1).join("\n")
     super(sql, name)
   end
+
+  # Only trilogy, Overwride this method
+  private
+  def raw_execute(sql, name, **kwargs)
+    Rails.logger.debug sql
+    Rails.logger.debug caller(1).join("\n")
+    super(sql, name, **kwargs)
+  end
 end
 
 Arproxy.configure do |config|

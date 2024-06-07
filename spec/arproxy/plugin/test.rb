@@ -9,5 +9,10 @@ module Arproxy::Plugin
     def execute(sql, name=nil)
       {:sql => "#{sql}_PLUGIN", :name => "#{name}_PLUGIN", :options => @options}
     end
+
+    private
+    def raw_execute(sql, name, **kwargs)
+      {:sql => "#{sql}_PLUGIN", :name => "#{name}_PLUGIN", :options => @options}
+    end
   end
 end
