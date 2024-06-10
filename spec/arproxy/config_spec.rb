@@ -54,6 +54,17 @@ describe Arproxy::Config do
       it { should == mysql2_class }
     end
 
+    context "when adapter is configured as 'trilogy'" do
+      let(:adapter) { "trilogy" }
+      let(:trilogy_class) { Class.new }
+
+      before do
+        stub_const("ActiveRecord::ConnectionAdapters::TrilogyAdapter", trilogy_class)
+      end
+
+      it { should == trilogy_class }
+    end
+
     context "when adapter is configured as 'sqlite3'" do
       let(:adapter) { "sqlite3" }
       let(:sqlite3_class) { Class.new }
