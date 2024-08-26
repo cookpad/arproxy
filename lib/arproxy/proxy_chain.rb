@@ -37,8 +37,7 @@ module Arproxy
         alias_method :execute, :execute_with_arproxy
 
         if private_method_defined?(:raw_execute) # Rails 7.1+
-          private
-          def raw_execute_with_arproxy(sql, name, **kwargs)
+          private def raw_execute_with_arproxy(sql, name, **kwargs)
             ::Arproxy.proxy_chain.connection = self
             ::Arproxy.proxy_chain.head.send :raw_execute, sql, name, **kwargs
           end
