@@ -7,6 +7,7 @@ module Arproxy
     end
 
     private
+
     def raw_execute(sql, name, **kwargs)
       next_proxy.send :raw_execute, sql, name, **kwargs
     end
