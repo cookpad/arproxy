@@ -54,8 +54,9 @@ module Arproxy
       @config.adapter_class.class_eval do
         alias_method :execute, :execute_without_arproxy
         if private_method_defined?(:raw_execute)
-          private
           alias_method :raw_execute, :raw_execute_without_arproxy
+          private :raw_execute
+          private :raw_execute_without_arproxy
         end
         ::Arproxy.logger.debug("Arproxy: Disabled")
       end
