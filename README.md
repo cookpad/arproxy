@@ -18,6 +18,7 @@ class QueryTracer < Arproxy::Base
 
   # for ActiveRecord version >= 7.1.x
   private
+
   def raw_execute(sql, name, **kwargs)
     Rails.logger.debug sql
     Rails.logger.debug caller(1).join("\n")
