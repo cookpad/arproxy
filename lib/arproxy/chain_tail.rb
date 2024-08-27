@@ -9,6 +9,7 @@ module Arproxy
     end
 
     private
+
     def raw_execute(sql, name, **kwargs)
       self.proxy_chain.connection.send :raw_execute_without_arproxy, sql, name, **kwargs
     end
