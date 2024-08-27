@@ -11,6 +11,7 @@ describe Arproxy do
     end
 
     private
+
     def raw_execute(sql, name, **kwargs)
       super "#{sql}_C", "#{name}_C"
     end
@@ -26,6 +27,7 @@ describe Arproxy do
     end
 
     private
+
     def raw_execute(sql, name, **kwargs)
       super "#{sql}_D#{@opt}", "#{name}_D#{@opt}"
     end
@@ -39,6 +41,7 @@ describe Arproxy do
         end
 
         private
+
         def raw_execute(sql, name, async: false, materialize_transactions: true)
           {:sql => sql, :name => name}
         end
