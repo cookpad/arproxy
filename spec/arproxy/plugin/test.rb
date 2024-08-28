@@ -11,6 +11,7 @@ module Arproxy::Plugin
     end
 
     private
+
     def raw_execute(sql, name, **kwargs)
       {:sql => "#{sql}_PLUGIN", :name => "#{name}_PLUGIN", :options => @options}
     end
