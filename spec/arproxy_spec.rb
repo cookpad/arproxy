@@ -291,6 +291,7 @@ describe Arproxy do
     context "ProxyChain thread-safety" do
       class ProxyWithConnectionId < Arproxy::Base
         private
+
         def raw_execute(sql, name, **kwargs)
           sleep 0.1
           super "#{sql} /* connection_id=#{self.proxy_chain.connection.object_id} */", name, **kwargs
