@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:9.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: arproxy_test
+      MYSQL_USER: arproxy
+      MYSQL_PASSWORD: password
+    ports:
+      - "23306:3306"
+
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: arproxy_test
+      POSTGRES_USER: arproxy
+      POSTGRES_PASSWORD: password
+    ports:
+      - "25432:5432"

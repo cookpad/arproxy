@@ -1,5 +1,5 @@
 *.swp
 *.gem
 Gemfile.lock
-gemfiles/*.lock
+*.gemfile.lock
 .bundle/
