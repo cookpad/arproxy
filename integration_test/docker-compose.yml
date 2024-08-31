@@ -17,7 +17,7 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=25432
     working_dir: /app
-    command: ["bundle", "exec", "rspec"]
+    command: ["bundle", "exec", "appraisal", "rspec"]
 
   mysql:
     image: mysql:9.0
