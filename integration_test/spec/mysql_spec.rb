@@ -29,6 +29,12 @@ context 'MySQL' do
     Product.create(name: 'orange', price: 300)
   end
 
+  after(:all) do
+    ActiveRecord::Base.connection.drop_table :products
+    ActiveRecord::Base.connection.close
+    Arproxy.disable!
+  end
+
   before(:each) do
     QueryLogger.reset!
   end
