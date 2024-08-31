@@ -9,16 +9,6 @@ on:
       - master
 
 jobs:
-  start_dbs:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./integration_test
-    steps:
-      - uses: actions/checkout@v2
-      - name: Start DBs
-        run: docker compose up -d
-
   integration_test:
     runs-on: ubuntu-latest
     defaults:
@@ -29,10 +19,18 @@ jobs:
       POSTGRES_HOST: 127.0.0.1
     strategy:
       matrix:
-        adapter: ['mysql2', 'postgresql']
-        gemfile: ['ar_6.1', 'ar_7.0', 'ar_7.1']
+        adapter:
+          - mysql2
+          - postgresql
+        gemfile:
+          - ar_6.1
+          - ar_7.0
+          - ar_7.1
+
     steps:
       - uses: actions/checkout@v2
+      - name: Start DBs
+        run: docker compose up -d
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
