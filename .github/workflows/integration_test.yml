@@ -8,18 +8,19 @@ on:
     branches:
       - master
 
+env:
+  RUBY_VERSION: 3.3
+
 jobs:
-  integration_test:
-    name: Test with ${{ matrix.gemfile }}
+  mysql:
     continue-on-error: true
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./integration_test
     env:
-      MYSQL_HOST: 127.0.0.1
-      POSTGRES_HOST: 127.0.0.1
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+      MYSQL_HOST: 127.0.0.1
     strategy:
       matrix:
         gemfile:
@@ -29,16 +30,40 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Start DB
-        run: docker compose up -d
+        run: docker compose up -d mysql
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
+          ruby-version: ${{ env.RUBY_VERSION }}
       - name: Run bundle install
         run: bundle install
-      - name: Run mysql2 test
-        continue-on-error: true
+      - name: Run integration test
         run: bundle exec rspec spec/mysql2_spec.rb
-      - name: Run postgresql test
-        continue-on-error: true
+
+  postgresql:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./integration_test
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+      POSTGRES_HOST: 127.0.0.1
+    strategy:
+      matrix:
+        gemfile:
+          - ar_6.1
+          - ar_7.0
+          - ar_7.1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start DB
+        run: docker compose up -d postgres
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+      - name: Run bundle install
+        run: bundle install
+      - name: Run integration test
         run: bundle exec rspec spec/postgresql_spec.rb
