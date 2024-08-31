@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "arproxy", path: "../arproxy"
+gem "arproxy", path: "../.."
 gem "rspec"
 gem "appraisal"
 gem "mysql2"
