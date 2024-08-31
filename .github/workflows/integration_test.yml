@@ -8,11 +8,9 @@ on:
     branches:
       - master
 
-env:
-  RUBY_VERSION: 3.3
-
 jobs:
-  mysql:
+  integration_test:
+    name: Test with ${{ matrix.gemfile }}
     continue-on-error: true
     runs-on: ubuntu-latest
     defaults:
@@ -20,37 +18,8 @@ jobs:
         working-directory: ./integration_test
     env:
       MYSQL_HOST: 127.0.0.1
-    strategy:
-      matrix:
-        gemfile:
-          - ar_6.1
-          - ar_7.0
-          - ar_7.1
-    steps:
-      - uses: actions/checkout@v2
-      - name: Start DB
-        run: docker compose up -d mysql
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-      - name: Run bundle install
-        env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
-        run: bundle install
-      - name: Run integration test
-        env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
-        run: bundle exec rspec spec/mysql2_spec.rb
-
-  postgresql:
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./integration_test
-    env:
       POSTGRES_HOST: 127.0.0.1
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
     strategy:
       matrix:
         gemfile:
@@ -60,16 +29,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Start DB
-        run: docker compose up -d postgres
+        run: docker compose up -d
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ env.RUBY_VERSION }}
+          ruby-version: 3.3
       - name: Run bundle install
-        env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
         run: bundle install
-      - name: Run integration test
-        env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+      - name: Run mysql2 test
+        continue-on-error: true
+        run: bundle exec rspec spec/mysql2_spec.rb
+      - name: Run postgresql test
+        continue-on-error: true
         run: bundle exec rspec spec/postgresql_spec.rb
