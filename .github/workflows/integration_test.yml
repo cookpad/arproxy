@@ -32,5 +32,15 @@ jobs:
         gemfile: ['ar_6.1', 'ar_7.0', 'ar_7.1']
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+      - name: Run bundle install
+        env:
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+        run: bundle install
       - name: Run integration test
-        run: BUNDLE_GEMFILE=gemfiles/${{ matrix.gemfile }}.gemfile bundle exec rspec spec/${{ matrix.adapter }}_spec.rb
+        env:
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+        run: bundle exec rspec spec/${{ matrix.adapter }}_spec.rb
