@@ -9,28 +9,23 @@ on:
       - master
 
 jobs:
-  integration_test:
+  mysql:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./integration_test
     env:
       MYSQL_HOST: 127.0.0.1
-      POSTGRES_HOST: 127.0.0.1
     strategy:
       matrix:
-        adapter:
-          - mysql2
-          - postgresql
         gemfile:
           - ar_6.1
           - ar_7.0
           - ar_7.1
-
     steps:
       - uses: actions/checkout@v2
-      - name: Start DBs
-        run: docker compose up -d
+      - name: Start DB
+        run: docker compose up -d mysql
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -42,4 +37,34 @@ jobs:
       - name: Run integration test
         env:
           BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
-        run: bundle exec rspec spec/${{ matrix.adapter }}_spec.rb
+        run: bundle exec rspec spec/mysql2_spec.rb
+
+  postgresql:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./integration_test
+    env:
+      POSTGRES_HOST: 127.0.0.1
+    strategy:
+      matrix:
+        gemfile:
+          - ar_6.1
+          - ar_7.0
+          - ar_7.1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start DB
+        run: docker compose up -d postgres
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+      - name: Run bundle install
+        env:
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+        run: bundle install
+      - name: Run integration test
+        env:
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+        run: bundle exec rspec spec/postgresql_spec.rb
