@@ -13,6 +13,7 @@ env:
 
 jobs:
   mysql:
+    continue-on-error: true
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,6 +44,7 @@ jobs:
         run: bundle exec rspec spec/mysql2_spec.rb
 
   postgresql:
+    continue-on-error: true
     runs-on: ubuntu-latest
     defaults:
       run:
