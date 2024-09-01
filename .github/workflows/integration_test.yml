@@ -26,9 +26,8 @@ jobs:
     strategy:
       matrix:
         gemfile:
-          - ar_6.1
-          - ar_7.0
           - ar_7.1
+          - ar_7.2
     steps:
       - uses: actions/checkout@v4
       - name: Start DB
@@ -54,9 +53,8 @@ jobs:
     strategy:
       matrix:
         gemfile:
-          - ar_6.1
-          - ar_7.0
           - ar_7.1
+          - ar_7.2
     steps:
       - uses: actions/checkout@v4
       - name: Start DB

@@ -2,9 +2,10 @@
 
 source "https://rubygems.org"
 
-gem "arproxy", path: "../.."
 gem "rspec"
 gem "appraisal"
-gem "mysql2"
-gem "pg"
-gem "activerecord", "~> 7.1.0"
+gem "rubocop"
+gem "rubocop-md"
+gem "activerecord", "~> 7.2.0"
+
+gemspec path: "../"
