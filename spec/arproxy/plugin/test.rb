@@ -7,7 +7,7 @@ module Arproxy::Plugin
     end
 
     def execute(sql, name=nil)
-      {:sql => "#{sql}_PLUGIN", :name => "#{name}_PLUGIN", :options => @options}
+      { sql: "#{sql}_PLUGIN", name: "#{name}_PLUGIN", options: @options }
     end
   end
 end

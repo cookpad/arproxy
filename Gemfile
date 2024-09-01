@@ -2,5 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rspec', '~> 3.13'
-gem 'appraisal', '~> 2.5'
+gem 'rspec'
+gem 'appraisal'
+gem 'rubocop'
+gem 'rubocop-md'

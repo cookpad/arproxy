@@ -3,10 +3,12 @@ name: Integration Test
 on:
   push:
     branches:
-      - master
+      - main
+      - v1
   pull_request:
     branches:
-      - master
+      - main
+      - v1
 
 env:
   RUBY_VERSION: 3.3

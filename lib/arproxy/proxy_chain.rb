@@ -1,5 +1,5 @@
 module Arproxy
-  autoload :ChainTail, "arproxy/chain_tail"
+  autoload :ChainTail, 'arproxy/chain_tail'
 
   class ProxyChain
     attr_reader :head, :tail
@@ -35,14 +35,14 @@ module Arproxy
         end
         alias_method :execute_without_arproxy, :execute
         alias_method :execute, :execute_with_arproxy
-        ::Arproxy.logger.debug("Arproxy: Enabled")
+        ::Arproxy.logger.debug('Arproxy: Enabled')
       end
     end
 
     def disable!
       @config.adapter_class.class_eval do
         alias_method :execute, :execute_without_arproxy
-        ::Arproxy.logger.debug("Arproxy: Disabled")
+        ::Arproxy.logger.debug('Arproxy: Disabled')
       end
     end
 
@@ -53,6 +53,5 @@ module Arproxy
     def connection=(val)
       Thread.current[:arproxy_connection] = val
     end
-
   end
 end

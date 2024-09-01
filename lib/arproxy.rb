@@ -1,9 +1,9 @@
-require "logger"
-require "arproxy/base"
-require "arproxy/config"
-require "arproxy/proxy_chain"
-require "arproxy/error"
-require "arproxy/plugin"
+require 'logger'
+require 'arproxy/base'
+require 'arproxy/config'
+require 'arproxy/proxy_chain'
+require 'arproxy/error'
+require 'arproxy/plugin'
 
 module Arproxy
   @config = @enabled = nil
@@ -20,12 +20,12 @@ module Arproxy
 
   def enable!
     if enable?
-      Arproxy.logger.warn "Arproxy has been already enabled"
+      Arproxy.logger.warn 'Arproxy has been already enabled'
       return
     end
 
     unless @config
-      raise Arproxy::Error, "Arproxy should be configured"
+      raise Arproxy::Error, 'Arproxy should be configured'
     end
 
     @proxy_chain = ProxyChain.new @config
@@ -36,7 +36,7 @@ module Arproxy
 
   def disable!
     unless enable?
-      Arproxy.logger.warn "Arproxy is not enabled yet"
+      Arproxy.logger.warn 'Arproxy is not enabled yet'
       return
     end
 
@@ -60,11 +60,9 @@ module Arproxy
   end
 
   def logger
-    @logger ||= begin
-                  @config && @config.logger ||
+    @logger ||= @config && @config.logger ||
                     defined?(::Rails) && ::Rails.logger ||
                     ::Logger.new(STDOUT)
-                end
   end
 
   def proxy_chain

@@ -17,7 +17,7 @@ class QueryTracer < Arproxy::Base
 end
 
 Arproxy.configure do |config|
-  config.adapter = "mysql2" # A DB Apdapter name which is used in your database.yml
+  config.adapter = 'mysql2' # A DB Apdapter name which is used in your database.yml
   config.use QueryTracer
 end
 Arproxy.enable!
@@ -27,7 +27,7 @@ Then you can see the backtrace of SQLs in the Rails' log.
 
 ```ruby
 # In your Rails code
-MyTable.where(:id => id).limit(1) # => The SQL and the backtrace appear in the log
+MyTable.where(id: id).limit(1) # => The SQL and the backtrace appear in the log
 ```
 
 ## Architecture
@@ -43,7 +43,7 @@ With Arproxy:
 
 ```ruby
 Arproxy.configure do |config|
-  config.adapter = "mysql2"
+  config.adapter = 'mysql2'
   config.use MyProxy1
   config.use MyProxy2
 end
@@ -82,7 +82,7 @@ end
 ```ruby
 class CommentAdder < Arproxy::Base
   def execute(sql, name=nil)
-    sql += " /*this_is_comment*/"
+    sql += ' /*this_is_comment*/'
     super(sql, name)
   end
 end
