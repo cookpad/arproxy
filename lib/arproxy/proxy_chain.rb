@@ -1,6 +1,7 @@
-module Arproxy
-  autoload :ChainTail, 'arproxy/chain_tail'
+require_relative './chain_tail'
+require_relative './connection_adapter_patches/patch_factory'
 
+module Arproxy
   class ProxyChain
     attr_reader :head, :tail
 
@@ -11,6 +12,7 @@ module Arproxy
 
     def setup
       @tail = ChainTail.new self
+      @patch = ConnectionAdapterPatches::PatchFactory.create(@config.adapter_class)
       @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
         proxy = cls.new(*options)
@@ -28,23 +30,11 @@ module Arproxy
     end
 
     def enable!
-      @config.adapter_class.class_eval do
-        def raw_execute_with_arproxy(sql, name=nil, **kwargs)
-          ::Arproxy.proxy_chain.connection = self
-          _sql, _name = *::Arproxy.proxy_chain.head.execute(sql, name)
-          self.send(:raw_execute_without_arproxy, _sql, _name, **kwargs)
-        end
-        alias_method :raw_execute_without_arproxy, :raw_execute
-        alias_method :raw_execute, :raw_execute_with_arproxy
-        ::Arproxy.logger.debug('Arproxy: Enabled')
-      end
+      @patch.enable!
     end
 
     def disable!
-      @config.adapter_class.class_eval do
-        alias_method :raw_execute, :raw_execute_without_arproxy
-        ::Arproxy.logger.debug('Arproxy: Disabled')
-      end
+      @patch.disable!
     end
 
     def connection
