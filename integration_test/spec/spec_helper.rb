@@ -5,7 +5,7 @@ class Product < ActiveRecord::Base
 end
 
 class QueryLogger < Arproxy::Base
-  def execute(sql, name = nil)
+  def execute(sql, name = nil, **kwargs)
     @@log ||= []
     @@log << sql
     puts "QueryLogger: #{sql}"
@@ -22,7 +22,7 @@ class QueryLogger < Arproxy::Base
 end
 
 class HelloProxy < Arproxy::Base
-  def execute(sql, name = nil)
-    super("#{sql} -- Hello Arproxy!", name)
+  def execute(sql, name = nil, **kwargs)
+    super("#{sql} -- Hello Arproxy!", name, **kwargs)
   end
 end

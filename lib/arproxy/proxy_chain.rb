@@ -29,19 +29,19 @@ module Arproxy
 
     def enable!
       @config.adapter_class.class_eval do
-        def execute_with_arproxy(sql, name=nil, **kwargs)
+        def raw_execute_with_arproxy(sql, name=nil, **kwargs)
           ::Arproxy.proxy_chain.connection = self
           ::Arproxy.proxy_chain.head.execute sql, name, **kwargs
         end
-        alias_method :execute_without_arproxy, :execute
-        alias_method :execute, :execute_with_arproxy
+        alias_method :raw_execute_without_arproxy, :raw_execute
+        alias_method :raw_execute, :raw_execute_with_arproxy
         ::Arproxy.logger.debug('Arproxy: Enabled')
       end
     end
 
     def disable!
       @config.adapter_class.class_eval do
-        alias_method :execute, :execute_without_arproxy
+        alias_method :raw_execute, :raw_execute_without_arproxy
         ::Arproxy.logger.debug('Arproxy: Disabled')
       end
     end
