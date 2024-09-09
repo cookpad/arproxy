@@ -45,7 +45,7 @@ context 'SQLServer' do
     expect(Product.first.name).to eq('apple')
 
     expect(QueryLogger.log.size).to eq(2)
-    expect(QueryLogger.log[0]).to eq('SELECT COUNT(*) FROM "products" -- Hello Arproxy!')
-    expect(QueryLogger.log[1]).to eq('SELECT "products".* FROM "products" ORDER BY "products"."id" ASC LIMIT $1 -- Hello Arproxy!')
+    expect(QueryLogger.log[0]).to eq('SELECT COUNT(*) FROM [products] -- Hello Arproxy!')
+    expect(QueryLogger.log[1]).to match(/\ASELECT \[products\].* FROM \[products\] ORDER BY \[products\]\.\[id\] ASC .* -- Hello Arproxy!\z/)
   end
 end
