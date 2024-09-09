@@ -8,7 +8,7 @@ context 'SQLServer' do
       port: ENV.fetch('MSSQL_PORT', '21433').to_i,
       database: 'arproxy_test',
       username: 'arproxy',
-      password: '4rpr0*y#2024'
+      password: ENV.fetch('ARPROXY_DB_PASSWORD')
     )
 
     Arproxy.configure do |config|
