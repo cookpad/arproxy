@@ -32,7 +32,7 @@ jobs:
           - ar_7.2
     steps:
       - uses: actions/checkout@v4
-      - name: Install freetds-common
+      - name: Install build dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential freetds-dev
