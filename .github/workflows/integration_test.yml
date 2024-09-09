@@ -14,7 +14,7 @@ env:
   RUBY_VERSION: 3.3
 
 jobs:
-  mysql:
+  integration_test:
     continue-on-error: true
     runs-on: ubuntu-latest
     defaults:
@@ -32,12 +32,16 @@ jobs:
           - ar_7.2
     steps:
       - uses: actions/checkout@v4
-      - name: Start DB
-        run: docker compose up -d
+      - name: Install freetds-common
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y freetds-common
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
+      - name: Start DB
+        run: docker compose up -d
       - name: Run bundle install
         run: bundle install
       - name: Run integration test
