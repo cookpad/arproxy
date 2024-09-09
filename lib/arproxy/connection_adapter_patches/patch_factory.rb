@@ -1,6 +1,6 @@
 module Arproxy
   module ConnectionAdapterPatches
-    SUPPORTED_ADAPTERS = %w[mysql2 postgresql sqlserver sqlite sqlite3]
+    SUPPORTED_ADAPTERS = %w[mysql2 postgresql sqlserver sqlite3 trilogy]
     class PatchFactory
       def self.create(adapter_class)
         patch_class(adapter_class).new(adapter_class)
