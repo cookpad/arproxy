@@ -9,7 +9,7 @@ context 'PostgreSQL' do
       port: ENV.fetch('POSTGRES_PORT', '25432').to_i,
       database: 'arproxy_test',
       username: 'arproxy',
-      password: 'password'
+      password: '4rpr0*y#2024'
     )
 
     Arproxy.configure do |config|

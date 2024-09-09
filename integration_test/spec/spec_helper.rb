@@ -1,5 +1,6 @@
 require 'arproxy'
 require 'active_record'
+require 'dotenv/load'
 
 class Product < ActiveRecord::Base
 end
