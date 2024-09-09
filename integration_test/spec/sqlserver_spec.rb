@@ -2,6 +2,13 @@ require_relative 'spec_helper'
 
 context 'SQLServer' do
   before(:all) do
+    if ActiveRecord.version >= '7.2'
+      ActiveRecord::ConnectionAdapters.register(
+        'sqlserver',
+        'ActiveRecord::ConnectionAdapters::SQLServerAdapter',
+        'active_record/connection_adapters/sqlserver_adapter'
+      )
+    end
     ActiveRecord::Base.establish_connection(
       adapter: 'sqlserver',
       host: ENV.fetch('MSSQL_HOST', '127.0.0.1'),
