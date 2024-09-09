@@ -29,6 +29,7 @@ module Arproxy
         adapter_class.class_eval do
           alias_method :raw_execute, :raw_execute_without_arproxy
           alias_method :internal_exec_query, :internal_exec_query_without_arproxy
+          ::Arproxy.logger.debug('Arproxy: Disabled')
         end
       end
     end
