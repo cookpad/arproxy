@@ -44,6 +44,9 @@ module Arproxy
       @proxy_chain.disable!
       @proxy_chain = nil
     end
+
+    clear_configuration
+
     @enabled = false
   end
 
