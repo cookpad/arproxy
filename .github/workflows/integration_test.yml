@@ -23,33 +23,8 @@ jobs:
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
       MYSQL_HOST: 127.0.0.1
-    strategy:
-      matrix:
-        gemfile:
-          - ar_7.1
-          - ar_7.2
-    steps:
-      - uses: actions/checkout@v4
-      - name: Start DB
-        run: docker compose up -d mysql
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-      - name: Run bundle install
-        run: bundle install
-      - name: Run integration test
-        run: bundle exec rspec spec/mysql2_spec.rb
-
-  postgresql:
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./integration_test
-    env:
-      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
       POSTGRES_HOST: 127.0.0.1
+      MSSQL_HOST: 127.0.0.1
     strategy:
       matrix:
         gemfile:
@@ -58,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Start DB
-        run: docker compose up -d postgres
+        run: docker compose up -d
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -66,4 +41,4 @@ jobs:
       - name: Run bundle install
         run: bundle install
       - name: Run integration test
-        run: bundle exec rspec spec/postgresql_spec.rb
+        run: bundle exec rspec
