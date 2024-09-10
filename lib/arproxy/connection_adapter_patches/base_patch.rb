@@ -37,6 +37,18 @@ module Arproxy
 
           adapter_class.class_eval do
             case target_method
+            when :execute # for AbstractMysqlAdapter, ActiveRecord 6.1
+              def execute_with_arproxy(sql, name=nil, **kwargs) #
+                ::Arproxy.proxy_chain.connection = self
+                _sql, _name = *::Arproxy.proxy_chain.head.execute(sql, name)
+                self.send(:execute_without_arproxy, _sql, _name, **kwargs)
+              end
+            when :exec_query # for AbstractAdapter, ActiveRecord 6.1
+              def exec_query_with_arproxy(sql, name=nil, binds=[], **kwargs) #
+                ::Arproxy.proxy_chain.connection = self
+                _sql, _name = *::Arproxy.proxy_chain.head.execute(sql, name)
+                self.send(:exec_query_without_arproxy, _sql, _name, binds, **kwargs)
+              end
             when :raw_execute
               def raw_execute_with_arproxy(sql, name=nil, **kwargs)
                 ::Arproxy.proxy_chain.connection = self

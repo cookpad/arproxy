@@ -4,7 +4,11 @@ module Arproxy
   module ConnectionAdapterPatches
     class PostgresqlPatch < BasePatch
       def enable!
-        enable_patches :raw_execute, :internal_exec_query
+        if ActiveRecord.version >= '7.1'
+          enable_patches :raw_execute, :internal_exec_query
+        else
+          enable_patches :execute, :exec_query
+        end
       end
     end
   end
