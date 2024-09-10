@@ -14,7 +14,7 @@ context "Trilogy (AR#{ar_version})", if: ActiveRecord.version >= '7.1' do
     Arproxy.configure do |config|
       config.adapter = 'trilogy'
       config.use HelloProxy
-      config.use QueryLogger
+      config.plugin :query_logger
     end
     Arproxy.enable!
   end

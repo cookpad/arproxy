@@ -14,7 +14,7 @@ context "MySQL (AR#{ar_version})" do
     Arproxy.configure do |config|
       config.adapter = 'mysql2'
       config.use HelloProxy
-      config.use QueryLogger
+      config.plugin :query_logger
     end
     Arproxy.enable!
   end

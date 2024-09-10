@@ -21,7 +21,7 @@ context "SQLServer (AR#{ar_version})" do
     Arproxy.configure do |config|
       config.adapter = 'sqlserver'
       config.use HelloProxy
-      config.use QueryLogger
+      config.plugin :query_logger
     end
     Arproxy.enable!
   end
