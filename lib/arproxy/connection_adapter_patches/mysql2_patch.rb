@@ -4,7 +4,11 @@ module Arproxy
   module ConnectionAdapterPatches
     class Mysql2Patch < BasePatch
       def enable!
-        enable_patches :raw_execute
+        if ActiveRecord.version >= '7.0'
+          enable_patches :raw_execute
+        else
+          enable_patches :execute
+        end
       end
     end
   end
