@@ -15,7 +15,7 @@ module Arproxy
         else
           enable_patch :execute
         end
-      when 'PostgreSQL', 'SQLServer', 'SQLite3' # known children of AbstractAdapter
+      when 'PostgreSQL', 'SQLServer', 'SQLite' # known children of AbstractAdapter
         if ActiveRecord.version >= '7.1'
           enable_patch :raw_execute
           enable_patch :internal_exec_query
