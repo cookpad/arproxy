@@ -17,35 +17,13 @@ context "PostgreSQL (AR#{ar_version})" do
       config.use QueryLogger
     end
     Arproxy.enable!
-
-    ActiveRecord::Base.connection.create_table :products, force: true do |t|
-      t.string :name
-      t.integer :price
-    end
-
-    Product.create(name: 'apple', price: 100)
-    Product.create(name: 'banana', price: 200)
-    Product.create(name: 'orange', price: 300)
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.drop_table :products
-    ActiveRecord::Base.connection.close
+    cleanup_activerecord
     Arproxy.disable!
   end
 
-  before(:each) do
-    QueryLogger.reset!
-  end
-
-  it do
-    expect(QueryLogger.log.size).to eq(0)
-
-    expect(Product.count).to eq(3)
-    expect(Product.first.name).to eq('apple')
-
-    expect(QueryLogger.log.size).to eq(2)
-    expect(QueryLogger.log[0]).to eq('SELECT COUNT(*) FROM "products" -- Hello Arproxy!')
-    expect(QueryLogger.log[1]).to eq('SELECT "products".* FROM "products" ORDER BY "products"."id" ASC LIMIT $1 -- Hello Arproxy!')
-  end
+  it_behaves_like 'Arproxy does not break the original ActiveRecord functionality'
+  it_behaves_like 'Custom proxies work expectedly'
 end
