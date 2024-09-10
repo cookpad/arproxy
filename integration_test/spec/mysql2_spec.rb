@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
-require 'mysql2'
 
-context 'MySQL' do
+context "MySQL (AR #{ActiveRecord.version})" do
   before(:all) do
     ActiveRecord::Base.establish_connection(
       adapter: 'mysql2',

@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
-require 'pg'
 
-context 'PostgreSQL' do
+context "PostgreSQL (AR#{ar_version})" do
   before(:all) do
     ActiveRecord::Base.establish_connection(
       adapter: 'postgresql',

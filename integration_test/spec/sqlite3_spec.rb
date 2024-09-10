@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
-require 'sqlite3'
 
-context 'SQLite3' do
+context "SQLite3 (AR#{ar_version})" do
   before(:all) do
     ActiveRecord::Base.establish_connection(
       adapter: 'sqlite3',

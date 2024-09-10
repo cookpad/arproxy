@@ -2,6 +2,10 @@ require 'arproxy'
 require 'active_record'
 require 'dotenv/load'
 
+def ar_version
+  "#{ActiveRecord::VERSION::MAJOR}.#{ActiveRecord::VERSION::MINOR}"
+end
+
 class Product < ActiveRecord::Base
 end
 

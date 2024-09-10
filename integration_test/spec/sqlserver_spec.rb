@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 
-context 'SQLServer' do
+context "SQLServer (AR#{ar_version})" do
   before(:all) do
     if ActiveRecord.version >= '7.2'
       ActiveRecord::ConnectionAdapters.register(
