@@ -1,5 +1,5 @@
 require_relative './chain_tail'
-require_relative './connection_adapter_patches/patch_factory'
+require_relative './connection_adapter_patch'
 
 module Arproxy
   class ProxyChain
@@ -12,7 +12,7 @@ module Arproxy
 
     def setup
       @tail = ChainTail.new self
-      @patch = ConnectionAdapterPatches::PatchFactory.create(@config.adapter_class)
+      @patch = ConnectionAdapterPatch.new(@config.adapter_class)
       @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
         proxy = cls.new(*options)
