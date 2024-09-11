@@ -9,12 +9,6 @@ describe Arproxy do
     def execute(sql, name)
       super "#{sql}_A", "#{name}_A"
     end
-
-    private
-
-    def raw_execute(sql, name, **kwargs)
-      super "#{sql}_C", "#{name}_C"
-    end
   end
 
   class ProxyB < Arproxy::Base
@@ -25,24 +19,39 @@ describe Arproxy do
     def execute(sql, name)
       super "#{sql}_B#{@opt}", "#{name}_B#{@opt}"
     end
+  end
 
-    private
+  class ProxyC < Arproxy::Base
+    private def raw_execute(sql, name, **kwargs)
+      super "#{sql}_C", "#{name}_C"
+    end
+  end
 
-    def raw_execute(sql, name, **kwargs)
+  class ProxyD < Arproxy::Base
+    def initialize(opt=nil)
+      @opt = opt
+    end
+    private def raw_execute(sql, name, **kwargs)
       super "#{sql}_D#{@opt}", "#{name}_D#{@opt}"
     end
   end
 
   module ::ActiveRecord
     module ConnectionAdapters
+      # for ActiveRecord version <= 7.0.x
       class DummyAdapter
         def execute(sql, name = nil)
           {:sql => sql, :name => name}
         end
+      end
 
-        private
+      # for ActiveRecord version >= 7.1.x
+      class NewDummyAdapter
+        def execute(sql, name = nil)
+          raw_execute(sql, name)
+        end
 
-        def raw_execute(sql, name, async: false, materialize_transactions: true)
+        private def raw_execute(sql, name, async: false, materialize_transactions: true)
           {:sql => sql, :name => name}
         end
       end
@@ -191,15 +200,16 @@ describe Arproxy do
     end
   end
 
-  describe "#raw_execute" do
-    subject { connection.send :raw_execute, "SQL", "NAME" }
+  let(:new_adapter_connection) { ::ActiveRecord::ConnectionAdapters::NewDummyAdapter.new }
+  describe "#execute for ActiveRecord version >= 7.1.x" do
+    subject { new_adapter_connection.send :execute, "SQL", "NAME" }
 
     context "with a proxy" do
       before do
         Arproxy.clear_configuration
         Arproxy.configure do |config|
-          config.adapter = "dummy"
-          config.use ProxyA
+          config.adapter = "new_dummy"
+          config.use ProxyC
         end
         Arproxy.enable!
       end
@@ -211,9 +221,9 @@ describe Arproxy do
       before do
         Arproxy.clear_configuration
         Arproxy.configure do |config|
-          config.adapter = "dummy"
-          config.use ProxyA
-          config.use ProxyB, 1
+          config.adapter = "new_dummy"
+          config.use ProxyC
+          config.use ProxyD, 1
         end
         Arproxy.enable!
       end
@@ -225,8 +235,8 @@ describe Arproxy do
       before do
         Arproxy.clear_configuration
         Arproxy.configure do |config|
-          config.adapter = "dummy"
-          config.use ProxyA
+          config.adapter = "new_dummy"
+          config.use ProxyC
         end
       end
 
@@ -267,7 +277,7 @@ describe Arproxy do
       context "re-configure" do
         before do
           Arproxy.configure do |config|
-            config.use ProxyB
+            config.use ProxyD
           end
           Arproxy.enable!
         end
@@ -279,7 +289,7 @@ describe Arproxy do
       before do
         Arproxy.clear_configuration
         Arproxy.configure do |config|
-          config.adapter = "dummy"
+          config.adapter = "new_dummy"
           config.plugin :test, :option_a, :option_b
         end
         Arproxy.enable!

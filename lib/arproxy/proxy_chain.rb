@@ -29,13 +29,6 @@ module Arproxy
 
     def enable!
       @config.adapter_class.class_eval do
-        def execute_with_arproxy(sql, name=nil, **kwargs)
-          ::Arproxy.proxy_chain.connection = self
-          ::Arproxy.proxy_chain.head.execute sql, name, **kwargs
-        end
-        alias_method :execute_without_arproxy, :execute
-        alias_method :execute, :execute_with_arproxy
-
         if private_method_defined?(:raw_execute) # Rails 7.1+
           private def raw_execute_with_arproxy(sql, name, **kwargs)
             ::Arproxy.proxy_chain.connection = self
@@ -43,19 +36,26 @@ module Arproxy
           end
           alias_method :raw_execute_without_arproxy, :raw_execute
           alias_method :raw_execute, :raw_execute_with_arproxy
+        else
+          def execute_with_arproxy(sql, name=nil, **kwargs)
+            ::Arproxy.proxy_chain.connection = self
+            ::Arproxy.proxy_chain.head.execute sql, name, **kwargs
+          end
+          alias_method :execute_without_arproxy, :execute
+          alias_method :execute, :execute_with_arproxy
         end
-
         ::Arproxy.logger.debug("Arproxy: Enabled")
       end
     end
 
     def disable!
       @config.adapter_class.class_eval do
-        alias_method :execute, :execute_without_arproxy
         if private_method_defined?(:raw_execute)
           alias_method :raw_execute, :raw_execute_without_arproxy
           private :raw_execute
           private :raw_execute_without_arproxy
+        else
+          alias_method :execute, :execute_without_arproxy
         end
         ::Arproxy.logger.debug("Arproxy: Disabled")
       end
