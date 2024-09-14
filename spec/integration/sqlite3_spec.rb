@@ -1,18 +1,14 @@
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
-context "MySQL (AR#{ar_version})" do
+context "SQLite3 (AR#{ar_version})" do
   before(:all) do
     ActiveRecord::Base.establish_connection(
-      adapter: 'mysql2',
-      host: ENV.fetch('MYSQL_HOST', '127.0.0.1'),
-      port: ENV.fetch('MYSQL_PORT', '23306').to_i,
-      database: 'arproxy_test',
-      username: 'arproxy',
-      password: ENV.fetch('ARPROXY_DB_PASSWORD')
+      adapter: 'sqlite3',
+      database: ':memory:'
     )
 
     Arproxy.configure do |config|
-      config.adapter = 'mysql2'
+      config.adapter = 'sqlite3'
       config.use HelloProxy
       config.plugin :query_logger
     end

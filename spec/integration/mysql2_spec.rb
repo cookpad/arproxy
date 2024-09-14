@@ -1,18 +1,18 @@
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
-context "PostgreSQL (AR#{ar_version})" do
+context "MySQL (AR#{ar_version})" do
   before(:all) do
     ActiveRecord::Base.establish_connection(
-      adapter: 'postgresql',
-      host: ENV.fetch('POSTGRES_HOST', '127.0.0.1'),
-      port: ENV.fetch('POSTGRES_PORT', '25432').to_i,
+      adapter: 'mysql2',
+      host: ENV.fetch('MYSQL_HOST', '127.0.0.1'),
+      port: ENV.fetch('MYSQL_PORT', '23306').to_i,
       database: 'arproxy_test',
       username: 'arproxy',
       password: ENV.fetch('ARPROXY_DB_PASSWORD')
     )
 
     Arproxy.configure do |config|
-      config.adapter = 'postgresql'
+      config.adapter = 'mysql2'
       config.use HelloProxy
       config.plugin :query_logger
     end

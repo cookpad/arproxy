@@ -1,14 +1,18 @@
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
-context "SQLite3 (AR#{ar_version})" do
+context "PostgreSQL (AR#{ar_version})" do
   before(:all) do
     ActiveRecord::Base.establish_connection(
-      adapter: 'sqlite3',
-      database: ':memory:'
+      adapter: 'postgresql',
+      host: ENV.fetch('POSTGRES_HOST', '127.0.0.1'),
+      port: ENV.fetch('POSTGRES_PORT', '25432').to_i,
+      database: 'arproxy_test',
+      username: 'arproxy',
+      password: ENV.fetch('ARPROXY_DB_PASSWORD')
     )
 
     Arproxy.configure do |config|
-      config.adapter = 'sqlite3'
+      config.adapter = 'postgresql'
       config.use HelloProxy
       config.plugin :query_logger
     end
