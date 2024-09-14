@@ -16,9 +16,7 @@ env:
 jobs:
   integration_test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./integration_test
+
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
       MYSQL_HOST: 127.0.0.1

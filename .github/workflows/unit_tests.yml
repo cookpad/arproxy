@@ -19,11 +19,6 @@ jobs:
         ruby-version:
           - 3.2
           - 3.3
-        gemfile:
-          - ar_6.1
-          - ar_7.0
-          - ar_7.1
-          - ar_7.2
 
     steps:
     - uses: actions/checkout@v2
@@ -32,7 +27,5 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
-    - name: Run tests with ${{ matrix.gemfile }}.gemfile on ruby-${{ matrix.ruby-version }}
+    - name: Run unit tests on ruby-${{ matrix.ruby-version }}
       run: bundle exec rspec spec/*_spec.rb
-      env:
-        BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
