@@ -17,8 +17,10 @@ module Arproxy
 
     if ActiveRecord.version >= '7.0'
       register_patches('Mysql2', patches: [:raw_execute], binds_patches: [])
+      register_patches('Trilogy', patches: [:raw_execute], binds_patches: [])
     else
       register_patches('Mysql2', patches: [:execute], binds_patches: [])
+      register_patches('Trilogy', patches: [:raw_execute], binds_patches: [])
     end
 
     if ActiveRecord.version >= '7.1'
