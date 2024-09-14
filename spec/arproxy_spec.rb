@@ -24,17 +24,21 @@ describe Arproxy do
   module ::ActiveRecord
     module ConnectionAdapters
       class DummyAdapter
-        ADAPTER_NAME = 'dummy'
+        ADAPTER_NAME = 'Dummy'
 
-        def execute(sql, name = nil)
-          { sql: sql, name: name }
+        def execute1(sql, name = nil, **kwargs)
+          { sql: sql, name: name, kwargs: kwargs }
+        end
+
+        def execute2(sql, name = nil, binds = [], **kwargs)
+          { sql: sql, name: name, binds: binds, kwargs: kwargs }
         end
       end
+      Arproxy::ConnectionAdapterPatch.register_patches('Dummy', patches: [:execute1], binds_patches: [:execute2])
     end
   end
 
   let(:connection) { ::ActiveRecord::ConnectionAdapters::DummyAdapter.new }
-  subject { connection.execute 'SQL', 'NAME' }
   after(:each) do
     Arproxy.disable!
   end
@@ -49,7 +53,18 @@ describe Arproxy do
       Arproxy.enable!
     end
 
-    it { should == { sql: 'SQL_A', name: 'NAME_A' } }
+    it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A', name: 'NAME_A', kwargs: {} }) }
+    it { expect(connection.execute1('SQL', 'NAME', a: 1, b: 2)).to eq({ sql: 'SQL_A', name: 'NAME_A', kwargs: { a: 1, b: 2 } }) }
+
+    it { expect(connection.execute2('SQL', 'NAME')).to eq({ sql: 'SQL_A', name: 'NAME_A', binds: [], kwargs: {} }) }
+
+    it do
+      expect(
+        connection.execute2('SQL', 'NAME', [:x, :y], a: 1, b: 2)
+      ).to eq(
+        { sql: 'SQL_A', name: 'NAME_A', binds: [:x, :y], kwargs: { a: 1, b: 2 } }
+      )
+    end
   end
 
   context 'with 2 proxies' do
@@ -63,7 +78,7 @@ describe Arproxy do
       Arproxy.enable!
     end
 
-    it { should == { sql: 'SQL_A_B', name: 'NAME_A_B' } }
+    it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A_B', name: 'NAME_A_B', kwargs: {} }) }
   end
 
   context 'with 2 proxies which have an option' do
@@ -77,7 +92,7 @@ describe Arproxy do
       Arproxy.enable!
     end
 
-    it { should == { sql: 'SQL_A_B1', name: 'NAME_A_B1' } }
+    it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A_B1', name: 'NAME_A_B1', kwargs: {} }) }
   end
 
   context do
@@ -94,7 +109,7 @@ describe Arproxy do
         Arproxy.enable!
         Arproxy.disable!
       end
-      it { should == { sql: 'SQL', name: 'NAME' } }
+      it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL', name: 'NAME', kwargs: {} }) }
     end
 
     context 'enable -> enable' do
@@ -102,7 +117,7 @@ describe Arproxy do
         Arproxy.enable!
         Arproxy.enable!
       end
-      it { should == { sql: 'SQL_A', name: 'NAME_A' } }
+      it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A', name: 'NAME_A', kwargs: {} }) }
     end
 
     context 'enable -> disable -> disable' do
@@ -111,26 +126,30 @@ describe Arproxy do
         Arproxy.disable!
         Arproxy.disable!
       end
-      it { should == { sql: 'SQL', name: 'NAME' } }
+      it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL', name: 'NAME', kwargs: {} }) }
     end
 
     context 'enable -> disable -> enable' do
       before do
         Arproxy.enable!
         Arproxy.disable!
-        Arproxy.enable!
       end
-      it { should == { sql: 'SQL_A', name: 'NAME_A' } }
+      it do
+        expect {
+          Arproxy.enable!
+        }.to raise_error(Arproxy::Error, /Arproxy has not been configured/)
+      end
     end
 
     context 're-configure' do
       before do
         Arproxy.configure do |config|
+          config.adapter = 'dummy'
           config.use ProxyB
         end
         Arproxy.enable!
       end
-      it { should == { sql: 'SQL_A_B', name: 'NAME_A_B' } }
+      it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A_B', name: 'NAME_A_B', kwargs: {} }) }
     end
   end
 
@@ -139,15 +158,21 @@ describe Arproxy do
       Arproxy.clear_configuration
       Arproxy.configure do |config|
         config.adapter = 'dummy'
-        config.plugin :test, :option_a, :option_b
+        config.plugin :test_plugin, :option_a, :option_b
       end
       Arproxy.enable!
     end
 
-    it { should == { sql: 'SQL_PLUGIN', name: 'NAME_PLUGIN', options: [:option_a, :option_b] } }
+    it do
+      expect(
+        connection.execute1('SQL', 'NAME')
+      ).to eq(
+        { sql: 'SQL /* options: [:option_a, :option_b] */', name: 'NAME_PLUGIN', kwargs: {} }
+      )
+    end
   end
 
-  xcontext 'ProxyChain thread-safety' do
+  context 'ProxyChain thread-safety' do
     class ProxyWithConnectionId < Arproxy::Base
       def execute(sql, name)
         sleep 0.1
@@ -165,8 +190,8 @@ describe Arproxy do
     end
 
     context 'with two threads' do
-      let!(:thr1) { Thread.new { connection.dup.execute 'SELECT 1' } }
-      let!(:thr2) { Thread.new { connection.dup.execute 'SELECT 1' } }
+      let!(:thr1) { Thread.new { connection.dup.execute1 'SELECT 1' } }
+      let!(:thr2) { Thread.new { connection.dup.execute1 'SELECT 1' } }
 
       it { expect(thr1.value).not_to eq(thr2.value) }
     end

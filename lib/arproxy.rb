@@ -6,69 +6,76 @@ require 'arproxy/error'
 require 'arproxy/plugin'
 
 module Arproxy
-  @config = @enabled = nil
+  @config = nil
+  @enabled = nil
+  @patch = nil
 
   module_function
-  def clear_configuration
-    @config = Config.new
-  end
-
-  def configure
-    clear_configuration unless @config
-    yield @config
-  end
-
-  def enable!
-    if enable?
-      Arproxy.logger.warn 'Arproxy has been already enabled'
-      return
+    def clear_configuration
+      @config = nil
     end
 
-    unless @config
-      raise Arproxy::Error, 'Arproxy should be configured'
+    def configure
+      @config = Config.new
+      yield @config
     end
 
-    @proxy_chain = ProxyChain.new @config
-    @proxy_chain.enable!
+    def enable!
+      if enable?
+        Arproxy.logger.warn 'Arproxy has been already enabled'
+        return
+      end
 
-    @enabled = true
-  end
+      unless @config
+        raise Arproxy::Error, 'Arproxy has not been configured'
+      end
 
-  def disable!
-    unless enable?
-      Arproxy.logger.warn 'Arproxy is not enabled yet'
-      return
+      @patch = ConnectionAdapterPatch.new(@config.adapter_class)
+      @proxy_chain = ProxyChain.new(@config, @patch)
+      @proxy_chain.enable!
+
+      @enabled = true
     end
 
-    if @proxy_chain
-      @proxy_chain.disable!
-      @proxy_chain = nil
+    def disable!
+      unless enable?
+        Arproxy.logger.warn 'Arproxy is not enabled yet'
+        return
+      end
+
+      if @proxy_chain
+        @proxy_chain.disable!
+        @proxy_chain = nil
+      end
+
+      clear_configuration
+
+      @enabled = false
     end
 
-    clear_configuration
-
-    @enabled = false
-  end
-
-  def enable?
-    !!@enabled
-  end
-
-  def reenable!
-    if enable?
-      @proxy_chain.reenable!
-    else
-      enable!
+    def enable?
+      !!@enabled
     end
-  end
 
-  def logger
-    @logger ||= @config && @config.logger ||
-                    defined?(::Rails) && ::Rails.logger ||
-                    ::Logger.new(STDOUT)
-  end
+    def reenable!
+      if enable?
+        @proxy_chain.reenable!
+      else
+        enable!
+      end
+    end
 
-  def proxy_chain
-    @proxy_chain
-  end
+    def logger
+      @logger ||= @config && @config.logger ||
+                      defined?(::Rails) && ::Rails.logger ||
+                      ::Logger.new(STDOUT)
+    end
+
+    def proxy_chain
+      @proxy_chain
+    end
+
+    def connection_adapter_patch
+      @patch
+    end
 end
