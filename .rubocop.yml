@@ -11,6 +11,7 @@ AllCops:
   Exclude:
     - '**/tmp/**/*'
     - '**/*.gemfile'
+    - 'vendor/**/*'
 
 # Prefer &&/|| over and/or.
 Style/AndOr:
