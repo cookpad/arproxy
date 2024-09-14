@@ -22,6 +22,7 @@ context "PostgreSQL (AR#{ar_version})" do
   after(:all) do
     cleanup_activerecord
     Arproxy.disable!
+    Arproxy.clear_configuration
   end
 
   it_behaves_like 'Arproxy does not break the original ActiveRecord functionality'

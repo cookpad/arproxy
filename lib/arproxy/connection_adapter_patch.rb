@@ -65,6 +65,7 @@ module Arproxy
       def apply_patch(target_method)
         return if @applied_patches.include?(target_method)
         adapter_class.class_eval do
+          break if instance_methods.include?(:"#{target_method}_with_arproxy")
           define_method("#{target_method}_with_arproxy") do |sql, name=nil, **kwargs|
             ::Arproxy.proxy_chain.connection = self
             _sql, _name = *::Arproxy.proxy_chain.head.execute(sql, name)

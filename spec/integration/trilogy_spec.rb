@@ -22,6 +22,7 @@ context "Trilogy (AR#{ar_version})", if: ActiveRecord.version >= '7.1' do
   after(:all) do
     cleanup_activerecord
     Arproxy.disable!
+    Arproxy.clear_configuration
   end
 
   it_behaves_like 'Arproxy does not break the original ActiveRecord functionality'

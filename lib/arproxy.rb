@@ -16,13 +16,13 @@ module Arproxy
     end
 
     def configure
-      @config = Config.new
+      @config ||= Config.new
       yield @config
     end
 
     def enable!
       if enable?
-        Arproxy.logger.warn 'Arproxy has been already enabled'
+        Arproxy.logger.warn 'Arproxy has already been enabled'
         return
       end
 
@@ -47,8 +47,6 @@ module Arproxy
         @proxy_chain.disable!
         @proxy_chain = nil
       end
-
-      clear_configuration
 
       @enabled = false
     end

@@ -41,6 +41,7 @@ describe Arproxy do
   let(:connection) { ::ActiveRecord::ConnectionAdapters::DummyAdapter.new }
   after(:each) do
     Arproxy.disable!
+    Arproxy.clear_configuration
   end
 
   context 'with a proxy' do
@@ -129,16 +130,25 @@ describe Arproxy do
       it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL', name: 'NAME', kwargs: {} }) }
     end
 
-    context 'enable -> disable -> enable' do
+    context 'clear_configuration -> enable' do
       before do
-        Arproxy.enable!
-        Arproxy.disable!
+        Arproxy.clear_configuration
       end
       it do
         expect {
           Arproxy.enable!
         }.to raise_error(Arproxy::Error, /Arproxy has not been configured/)
       end
+    end
+
+
+    context 'enable -> disable -> enable' do
+      before do
+        Arproxy.enable!
+        Arproxy.disable!
+        Arproxy.enable!
+      end
+      it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A', name: 'NAME_A', kwargs: {} }) }
     end
 
     context 're-configure' do
