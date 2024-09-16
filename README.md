@@ -102,6 +102,7 @@ class Readonly < Arproxy::Base
       super sql, name
     else
       Rails.logger.warn "#{name} (BLOCKED) #{sql}"
+      nil # return nil to block the query
     end
   end
 end

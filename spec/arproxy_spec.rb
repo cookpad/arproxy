@@ -96,6 +96,30 @@ describe Arproxy do
     it { expect(connection.execute1('SQL', 'NAME')).to eq({ sql: 'SQL_A_B1', name: 'NAME_A_B1', kwargs: {} }) }
   end
 
+  context 'with a proxy that returns nil' do
+    class ReadonlyAccess < Arproxy::Base
+      def execute(sql, name)
+        if sql =~ /^(SELECT)\b/
+          super sql, name
+        else
+          nil
+        end
+      end
+    end
+
+    before do
+      Arproxy.clear_configuration
+      Arproxy.configure do |config|
+        config.adapter = 'dummy'
+        config.use ReadonlyAccess
+      end
+      Arproxy.enable!
+    end
+
+    it { expect(connection.execute1('SELECT 1', 'NAME')).to eq({ sql: 'SELECT 1', name: 'NAME', kwargs: {} }) }
+    it { expect(connection.execute1('UPDATE foo SET bar = 1', 'NAME')).to eq(nil) }
+  end
+
   context do
     before do
       Arproxy.clear_configuration

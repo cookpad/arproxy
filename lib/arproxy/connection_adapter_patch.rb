@@ -68,8 +68,13 @@ module Arproxy
           break if instance_methods.include?(:"#{target_method}_with_arproxy")
           define_method("#{target_method}_with_arproxy") do |sql, name=nil, **kwargs|
             ::Arproxy.proxy_chain.connection = self
-            _sql, _name = *::Arproxy.proxy_chain.head.execute(sql, name)
-            self.send("#{target_method}_without_arproxy", _sql, _name, **kwargs)
+            proxy_chain_result = ::Arproxy.proxy_chain.head.execute(sql, name)
+            if proxy_chain_result && proxy_chain_result.is_a?(Array)
+              _sql, _name = proxy_chain_result
+              self.send("#{target_method}_without_arproxy", _sql, _name, **kwargs)
+            else
+              nil
+            end
           end
           alias_method :"#{target_method}_without_arproxy", target_method
           alias_method target_method, :"#{target_method}_with_arproxy"
@@ -82,8 +87,13 @@ module Arproxy
         adapter_class.class_eval do
           define_method("#{target_method}_with_arproxy") do |sql, name=nil, binds=[], **kwargs|
             ::Arproxy.proxy_chain.connection = self
-            _sql, _name = *::Arproxy.proxy_chain.head.execute(sql, name)
-            self.send("#{target_method}_without_arproxy", _sql, _name, binds, **kwargs)
+            proxy_chain_result = ::Arproxy.proxy_chain.head.execute(sql, name)
+            if proxy_chain_result && proxy_chain_result.is_a?(Array)
+              _sql, _name = proxy_chain_result
+              self.send("#{target_method}_without_arproxy", _sql, _name, binds, **kwargs)
+            else
+              nil
+            end
           end
           alias_method :"#{target_method}_without_arproxy", target_method
           alias_method target_method, :"#{target_method}_with_arproxy"
