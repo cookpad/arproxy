@@ -1,11 +1,10 @@
 [![Build Status](https://github.com/cookpad/arproxy/actions/workflows/ruby.yml/badge.svg)](https://github.com/cookpad/arproxy/actions)
 
-## Welcome to Arproxy
-Arproxy is a proxy between ActiveRecord and Database adapters.
-You can make a custom proxy what analyze and/or modify SQLs before DB adapter executes them.
+## Arproxy
+Arproxy is a library that can intercept SQL queries executed by ActiveRecord to log them or modify the queries themselves.
 
 ## Getting Started
-Write your proxy and its configurations in Rails' config/initializers:
+Create your custom proxy and add its configuration in your Rails' `config/initializers/` directory:
 
 ```ruby
 class QueryTracer < Arproxy::Base
@@ -30,13 +29,20 @@ Then you can see the backtrace of SQLs in the Rails' log.
 MyTable.where(id: id).limit(1) # => The SQL and the backtrace appear in the log
 ```
 
+### What the `name' argument is
+In the Rails' log you may see queries like this:
+```
+User Load (22.6ms)  SELECT `users`.* FROM `users` WHERE `users`.`name` = 'Issei Naruta'
+```
+Then `"User Load"` is the `name`.
+
 ## Architecture
 Without Arproxy:
 
 ```
-+-------------------------+                       +------------------+
-| ActiveRecord::Base#find |--execute(sql, name)-->| Database Adapter |
-+-------------------------+                       +------------------+
++-------------------------+        +------------------+
+| ActiveRecord::Base#find |--SQL-->| Database Adapter |
++-------------------------+        +------------------+
 ```
 
 With Arproxy:
@@ -50,9 +56,9 @@ end
 ```
 
 ```
-+-------------------------+                       +----------+   +----------+   +------------------+
-| ActiveRecord::Base#find |--execute(sql, name)-->| MyProxy1 |-->| MyProxy2 |-->| Database Adapter |
-+-------------------------+                       +----------+   +----------+   +------------------+
++-------------------------+        +----------+   +----------+   +------------------+
+| ActiveRecord::Base#find |--SQL-->| MyProxy1 |-->| MyProxy2 |-->| Database Adapter |
++-------------------------+        +----------+   +----------+   +------------------+
 ```
 
 ## Examples
@@ -122,16 +128,34 @@ Arproxy.configure do |config|
 end
 ```
 
-## Appendix
-### What the `name' argument is
-In the Rails' log you may see queries like this:
-```
-User Load (22.6ms)  SELECT `users`.* FROM `users` WHERE `users`.`name` = 'Issei Naruta'
-```
-Then `"User Load"` is the `name`.
+## Development
 
-##  License
+### Setup
+
+```
+$ git clone https://github.com/cookpad/arproxy.git
+$ cd arproxy
+$ bundle install
+$ bundle exec appraisal install
+```
+
+### Run test
+
+To run all tests with all supported versions of ActiveRecord:
+
+```
+$ docker compose up -d
+$ bundle exec appraisal rspec
+```
+
+To run tests for a specific version of ActiveRecord:
+
+```
+$ bundle exec appraisal ar_7.1 rspec
+or
+$ BUNDLE_GEMFILE=gemfiles/ar_7.1.gemfile bundle exec rspec
+```
+
+## License
 Arproxy is released under the MIT license:
 * www.opensource.org/licenses/MIT
-
-Copyright (c) 2023 Issei Naruta
