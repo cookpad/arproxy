@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 context "SQLServer (AR#{ar_version})" do
   before(:all) do
-    if ActiveRecord.version >= '7.2'
+    if ActiveRecord.version >= Gem::Version.new('7.2')
       ActiveRecord::ConnectionAdapters.register(
         'sqlserver',
         'ActiveRecord::ConnectionAdapters::SQLServerAdapter',
