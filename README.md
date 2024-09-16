@@ -61,6 +61,26 @@ end
 +-------------------------+        +----------+   +----------+   +------------------+
 ```
 
+## Supported Environments
+
+Arproxy supports the following databases and adapters:
+
+- MySQL
+  - `mysql2`, `trilogy`
+- PostgreSQL
+  - `pg`
+- SQLite
+  - `sqlite3`
+- SQLServer
+  - `activerecord-sqlserver-adapter`
+
+We have tested with the following versions of Ruby and ActiveRecord:
+
+- Ruby
+  - `2.7`, `3.0`, `3.1`, `3.2`, `3.3`
+- ActiveRecord
+  - `6.1`, `7.0`, `7.1`, `7.2`
+
 ## Examples
 ### Slow Query Logger
 ```ruby
