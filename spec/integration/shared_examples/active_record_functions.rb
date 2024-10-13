@@ -16,8 +16,7 @@ RSpec.shared_examples 'Arproxy does not break the original ActiveRecord function
   end
 
   context 'SELECT' do
-    # it { expect(Product.where(name: ['apple', 'orange']).sum(:price)).to eq(400) }
-    it { expect(Product.count).to eq(3) }
+    it { expect(Product.where(name: ['apple', 'orange']).sum(:price)).to eq(400) }
   end
 
   context 'UPDATE' do
