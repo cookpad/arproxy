@@ -48,7 +48,7 @@ Layout/EmptyLineAfterMagicComment:
 
 Layout/EmptyLinesAroundAccessModifier:
   Enabled: true
-  EnforcedStyle: only_before
+  EnforcedStyle: around
 
 Layout/EmptyLinesAroundBlockBody:
   Enabled: true
@@ -159,7 +159,6 @@ Layout/TrailingEmptyLines:
 # No trailing whitespace.
 Layout/TrailingWhitespace:
   Enabled: true
-
 # Use quotes for string literals when they are enough.
 Style/RedundantPercentQ:
   Enabled: true

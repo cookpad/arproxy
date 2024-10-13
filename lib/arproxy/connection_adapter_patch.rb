@@ -62,6 +62,7 @@ module Arproxy
     end
 
     private
+
       def apply_patch(target_method)
         return if @applied_patches.include?(target_method)
         adapter_class.class_eval do

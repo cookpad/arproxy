@@ -11,6 +11,7 @@ module Arproxy
   @patch = nil
 
   module_function
+
     def clear_configuration
       @config = nil
     end

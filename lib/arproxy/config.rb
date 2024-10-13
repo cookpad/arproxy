@@ -36,6 +36,7 @@ module Arproxy
     end
 
     private
+
       def camelized_adapter_name
         adapter_name = @adapter.to_s.split('_').map(&:capitalize).join
 
