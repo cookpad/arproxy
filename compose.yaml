@@ -13,7 +13,7 @@ services:
       - "23306:3306"
 
   postgres:
-    image: postgres:16
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_DB: ${ARPROXY_DB_DATABASE}
