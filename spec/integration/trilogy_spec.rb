@@ -1,11 +1,19 @@
 require_relative '../spec_helper'
+require 'trilogy'
 
 context "Trilogy (AR#{ar_version})", if: ActiveRecord.version >= '7.1' do
   before(:all) do
+    mysql_data_dir = File.expand_path('../../db/mysql/data', __dir__)
     ActiveRecord::Base.establish_connection(
       adapter: 'trilogy',
       host: ENV.fetch('MYSQL_HOST', '127.0.0.1'),
       port: ENV.fetch('MYSQL_PORT', '23306').to_i,
+      ssl: true,
+      ssl_mode: Trilogy::SSL_VERIFY_CA,
+      tls_min_version: Trilogy::TLS_VERSION_12,
+      ssl_ca: File.join(mysql_data_dir, 'ca.pem'),
+      ssl_cert: File.join(mysql_data_dir, 'client-cert.pem'),
+      ssl_key: File.join(mysql_data_dir, 'client-key.pem'),
       database: 'arproxy_test',
       username: 'arproxy',
       password: ENV.fetch('ARPROXY_DB_PASSWORD')

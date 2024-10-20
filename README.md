@@ -81,7 +81,7 @@ We have tested with the following versions of Ruby, ActiveRecord, and databases:
 - ActiveRecord
   - `6.1`, `7.0`, `7.1`, `7.2`
 - MySQL
-  - `8.0`
+  - `9.0`
 - PostgreSQL
   - `17`
 - SQLServer
