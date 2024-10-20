@@ -16,7 +16,7 @@ class QueryTracer < Arproxy::Base
 end
 
 Arproxy.configure do |config|
-  config.adapter = 'mysql2' # A DB Apdapter name which is used in your database.yml
+  config.adapter = 'mysql2' # A DB Adapter name which is used in your database.yml
   config.use QueryTracer
 end
 Arproxy.enable!
