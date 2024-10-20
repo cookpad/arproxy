@@ -24,5 +24,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: docker compose up
         run: docker compose -f compose-ci.yaml up -d
+      - name: wait for db # FIXME
+        run: sleep 10
       - name: Run integration test
         run: docker compose -f compose-ci.yaml exec ruby bundle exec appraisal ${{ matrix.appraisal }} rspec spec/integration/*_spec.rb
