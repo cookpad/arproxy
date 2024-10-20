@@ -41,7 +41,6 @@ describe Arproxy do
   let(:connection) { ::ActiveRecord::ConnectionAdapters::DummyAdapter.new }
   after(:each) do
     Arproxy.disable!
-    Arproxy.clear_configuration
   end
 
   context 'with a proxy' do
