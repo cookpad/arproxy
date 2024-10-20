@@ -6,9 +6,9 @@ RSpec.shared_examples 'Arproxy does not break the original ActiveRecord function
       t.integer :price
     end
     # INSERT
-    Product.create(name: 'apple', price: 100)
-    Product.create(name: 'banana', price: 200)
-    Product.create(name: 'orange', price: 300)
+    Product.create!(name: 'apple', price: 100)
+    Product.create!(name: 'banana', price: 200)
+    Product.create!(name: 'orange', price: 300)
   end
 
   after(:all) do
@@ -24,7 +24,7 @@ RSpec.shared_examples 'Arproxy does not break the original ActiveRecord function
       expect {
         Product.where(name: 'banana').update_all(price: 1000)
       }.to change {
-        Product.find_by(name: 'banana').price
+        Product.find_by!(name: 'banana').price
       }.from(200).to(1000)
     end
   end
