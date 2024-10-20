@@ -1,5 +1,5 @@
-require "active_record"
-require "active_record/base"
+require 'active_record'
+require 'active_record/base'
 
 module Arproxy
   class Config
@@ -9,7 +9,7 @@ module Arproxy
     def initialize
       @proxies = []
       if defined?(Rails)
-        @adapter = Rails.application.config_for(:database)["adapter"]
+        @adapter = Rails.application.config_for(:database)['adapter']
       end
     end
 
@@ -24,7 +24,7 @@ module Arproxy
     end
 
     def adapter_class
-      raise Arproxy::Error, "config.adapter must be set" unless @adapter
+      raise Arproxy::Error, 'config.adapter must be set' unless @adapter
       case @adapter
       when String, Symbol
         eval "::ActiveRecord::ConnectionAdapters::#{camelized_adapter_name}Adapter"
@@ -37,19 +37,19 @@ module Arproxy
 
     private
 
-    def camelized_adapter_name
-      adapter_name = @adapter.to_s.split("_").map(&:capitalize).join
+      def camelized_adapter_name
+        adapter_name = @adapter.to_s.split('_').map(&:capitalize).join
 
-      case adapter_name
-      when 'Sqlite3'
-        'SQLite3'
-      when 'Sqlserver'
-        'SQLServer'
-      when 'Postgresql'
-        'PostgreSQL'
-      else
-        adapter_name
+        case adapter_name
+        when 'Sqlite3'
+          'SQLite3'
+        when 'Sqlserver'
+          'SQLServer'
+        when 'Postgresql'
+          'PostgreSQL'
+        else
+          adapter_name
+        end
       end
-    end
   end
 end

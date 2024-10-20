@@ -1,11 +1,10 @@
 [![Build Status](https://github.com/cookpad/arproxy/actions/workflows/ruby.yml/badge.svg)](https://github.com/cookpad/arproxy/actions)
 
-## Welcome to Arproxy
-Arproxy is a proxy between ActiveRecord and Database adapters.
-You can make a custom proxy what analyze and/or modify SQLs before DB adapter executes them.
+## Arproxy
+Arproxy is a library that can intercept SQL queries executed by ActiveRecord to log them or modify the queries themselves.
 
 ## Getting Started
-Write your proxy and its configurations in Rails' config/initializers:
+Create your custom proxy and add its configuration in your Rails' `config/initializers/` directory:
 
 ```ruby
 class QueryTracer < Arproxy::Base
@@ -17,7 +16,7 @@ class QueryTracer < Arproxy::Base
 end
 
 Arproxy.configure do |config|
-  config.adapter = "mysql2" # A DB Apdapter name which is used in your database.yml
+  config.adapter = 'mysql2' # A DB Adapter name which is used in your database.yml
   config.use QueryTracer
 end
 Arproxy.enable!
@@ -27,33 +26,66 @@ Then you can see the backtrace of SQLs in the Rails' log.
 
 ```ruby
 # In your Rails code
-MyTable.where(:id => id).limit(1) # => The SQL and the backtrace appear in the log
+MyTable.where(id: id).limit(1) # => The SQL and the backtrace appear in the log
 ```
+
+### What the `name' argument is
+In the Rails' log you may see queries like this:
+```
+User Load (22.6ms)  SELECT `users`.* FROM `users` WHERE `users`.`name` = 'Issei Naruta'
+```
+Then `"User Load"` is the `name`.
 
 ## Architecture
 Without Arproxy:
 
 ```
-+-------------------------+                       +------------------+
-| ActiveRecord::Base#find |--execute(sql, name)-->| Database Adapter |
-+-------------------------+                       +------------------+
++-------------------------+        +------------------+
+| ActiveRecord::Base#find |--SQL-->| Database Adapter |
++-------------------------+        +------------------+
 ```
 
 With Arproxy:
 
 ```ruby
 Arproxy.configure do |config|
-  config.adapter = "mysql2"
+  config.adapter = 'mysql2'
   config.use MyProxy1
   config.use MyProxy2
 end
 ```
 
 ```
-+-------------------------+                       +----------+   +----------+   +------------------+
-| ActiveRecord::Base#find |--execute(sql, name)-->| MyProxy1 |-->| MyProxy2 |-->| Database Adapter |
-+-------------------------+                       +----------+   +----------+   +------------------+
++-------------------------+        +----------+   +----------+   +------------------+
+| ActiveRecord::Base#find |--SQL-->| MyProxy1 |-->| MyProxy2 |-->| Database Adapter |
++-------------------------+        +----------+   +----------+   +------------------+
 ```
+
+## Supported Environments
+
+Arproxy supports the following databases and adapters:
+
+- MySQL
+  - `mysql2`, `trilogy`
+- PostgreSQL
+  - `pg`
+- SQLite
+  - `sqlite3`
+- SQLServer
+  - `activerecord-sqlserver-adapter`
+
+We have tested with the following versions of Ruby, ActiveRecord, and databases:
+
+- Ruby
+  - `2.7`, `3.0`, `3.1`, `3.2`, `3.3`
+- ActiveRecord
+  - `6.1`, `7.0`, `7.1`, `7.2`
+- MySQL
+  - `9.0`
+- PostgreSQL
+  - `17`
+- SQLServer
+  - `2022`
 
 ## Examples
 ### Slow Query Logger
@@ -82,7 +114,7 @@ end
 ```ruby
 class CommentAdder < Arproxy::Base
   def execute(sql, name=nil)
-    sql += " /*this_is_comment*/"
+    sql += ' /*this_is_comment*/'
     super(sql, name)
   end
 end
@@ -96,6 +128,7 @@ class Readonly < Arproxy::Base
       super sql, name
     else
       Rails.logger.warn "#{name} (BLOCKED) #{sql}"
+      nil # return nil to block the query
     end
   end
 end
@@ -122,16 +155,34 @@ Arproxy.configure do |config|
 end
 ```
 
-## Appendix
-### What the `name' argument is
-In the Rails' log you may see queries like this:
-```
-User Load (22.6ms)  SELECT `users`.* FROM `users` WHERE `users`.`name` = 'Issei Naruta'
-```
-Then `"User Load"` is the `name`.
+## Development
 
-##  License
+### Setup
+
+```
+$ git clone https://github.com/cookpad/arproxy.git
+$ cd arproxy
+$ bundle install
+$ bundle exec appraisal install
+```
+
+### Run test
+
+To run all tests with all supported versions of ActiveRecord:
+
+```
+$ docker compose up -d
+$ bundle exec appraisal rspec
+```
+
+To run tests for a specific version of ActiveRecord:
+
+```
+$ bundle exec appraisal ar_7.1 rspec
+or
+$ BUNDLE_GEMFILE=gemfiles/ar_7.1.gemfile bundle exec rspec
+```
+
+## License
 Arproxy is released under the MIT license:
 * www.opensource.org/licenses/MIT
-
-Copyright (c) 2023 Issei Naruta

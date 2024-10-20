@@ -1,4 +1,10 @@
 # Change Log
+## 1.0.0
+* Added support for ActiveRecord 7.1.
+* Redesigned the proxy chain to accommodate internal structure changes in ActiveRecord 7.1.
+* Introduced integration tests using real databases, allowing for more robust testing of functionality with MySQL, PostgreSQL, SQLite, and SQLServer.
+  See: https://github.com/cookpad/arproxy/issues/30
+
 ## 0.2.9
 * Support ActiveRecord 7.0 (#21)
   Thanks to @r7kamura
