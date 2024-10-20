@@ -9,10 +9,15 @@ context "SQLServer (AR#{ar_version})" do
         'active_record/connection_adapters/sqlserver_adapter'
       )
     end
+
+    host = ENV.fetch('MSSQL_HOST', '127.0.0.1')
+    port = ENV.fetch('MSSQL_PORT', '21433').to_i
+    wait_for_db(host, port)
+
     ActiveRecord::Base.establish_connection(
       adapter: 'sqlserver',
-      host: ENV.fetch('MSSQL_HOST', '127.0.0.1'),
-      port: ENV.fetch('MSSQL_PORT', '21433').to_i,
+      host: host,
+      port: port,
       database: 'arproxy_test',
       username: 'arproxy',
       password: ENV.fetch('ARPROXY_DB_PASSWORD')

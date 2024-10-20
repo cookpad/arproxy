@@ -3,11 +3,15 @@ require 'trilogy'
 
 context "Trilogy (AR#{ar_version})", if: ActiveRecord.version >= '7.1' do
   before(:all) do
+    host = ENV.fetch('MYSQL_HOST', '127.0.0.1')
+    port = ENV.fetch('MYSQL_PORT', '23306').to_i
+    wait_for_db(host, port)
+
     mysql_data_dir = File.expand_path('../../db/mysql/data', __dir__)
     ActiveRecord::Base.establish_connection(
       adapter: 'trilogy',
-      host: ENV.fetch('MYSQL_HOST', '127.0.0.1'),
-      port: ENV.fetch('MYSQL_PORT', '23306').to_i,
+      host: host,
+      port: port,
       ssl: true,
       ssl_mode: Trilogy::SSL_VERIFY_CA,
       tls_min_version: Trilogy::TLS_VERSION_12,

@@ -16,3 +16,19 @@ def cleanup_activerecord
   ActiveRecord::Base.descendants.each(&:reset_column_information)
   ActiveRecord::Base.connection.schema_cache.clear!
 end
+
+def wait_for_db(host, port, interval = 0.2, timeout = 10)
+  print "\nWaiting for DB on #{host}:#{port}..." if ENV['DEBUG']
+  Timeout.timeout(timeout) do
+    loop do
+      TCPSocket.new(host, port).close
+      puts 'ok' if ENV['DEBUG']
+      break
+    rescue Errno::ECONNREFUSED
+      print '.' if ENV['DEBUG']
+      sleep interval
+    end
+  end
+rescue Timeout::Error
+  raise "Timeout waiting for DB on #{host}:#{port}"
+end
