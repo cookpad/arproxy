@@ -1,0 +1,64 @@
+services:
+  ruby:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      MSSQL_HOST: sqlserver
+      MSSQL_PORT: 1433
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mysql:
+    image: mysql:9.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ${ARPROXY_DB_DATABASE}
+      MYSQL_USER: ${ARPROXY_DB_USER}
+      MYSQL_PASSWORD: ${ARPROXY_DB_PASSWORD}
+    volumes:
+      - ./db/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "23306:3306"
+
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: ${ARPROXY_DB_DATABASE}
+      POSTGRES_USER: ${ARPROXY_DB_USER}
+      POSTGRES_PASSWORD: ${ARPROXY_DB_PASSWORD}
+    ports:
+      - "25432:5432"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: R00tPassword12!
+    ports:
+      - "21433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P R00tPassword12! -Q 'SELECT 1' || exit 1"]
+      interval: 5s
+      retries: 10
+      start_period: 10s
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    volumes:
+      - ./db/sqlserver/init.sql:/init.sql
+    command: /opt/mssql-tools18/bin/sqlcmd -C -S sqlserver -U sa -P R00tPassword12! -d master -i /init.sql
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+volumes:
+  mysql-data:

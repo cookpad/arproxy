@@ -8,39 +8,21 @@ on:
     branches:
       - main
 
-env:
-  RUBY_VERSION: 3.3
-
 jobs:
   integration_test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
-    env:
-      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
-      MYSQL_HOST: 127.0.0.1
-      POSTGRES_HOST: 127.0.0.1
-      MSSQL_HOST: 127.0.0.1
     strategy:
       matrix:
-        gemfile:
-          - ar_6.1
-          - ar_7.0
-          - ar_7.1
-          - ar_7.2
+        appraisal:
+          - ar-6.1
+          - ar-7.0
+          - ar-7.1
+          - ar-7.2
     steps:
       - uses: actions/checkout@v4
-      - name: Install build dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential freetds-dev
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-      - name: Start DB
-        run: docker compose up -d
-      - name: Install gems
-        run: bundle install
+      - name: docker compose up
+        run: docker compose -f compose-ci.yaml up -d
       - name: Run integration test
-        run: bundle exec rspec spec/integration/*_spec.rb
+        run: docker compose -f compose-ci.yaml exec ruby bundle exec appraisal ${{ matrix.appraisal }} rspec spec/integration/*_spec.rb
