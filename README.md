@@ -1,9 +1,9 @@
 [![Build Status](https://github.com/cookpad/arproxy/actions/workflows/ruby.yml/badge.svg)](https://github.com/cookpad/arproxy/actions)
 
-## Arproxy
+# Arproxy
 Arproxy is a library that can intercept SQL queries executed by ActiveRecord to log them or modify the queries themselves.
 
-## Getting Started
+# Getting Started
 Create your custom proxy and add its configuration in your Rails' `config/initializers/` directory:
 
 ```ruby
@@ -29,14 +29,14 @@ Then you can see the backtrace of SQLs in the Rails' log.
 MyTable.where(id: id).limit(1) # => The SQL and the backtrace appear in the log
 ```
 
-### What the `name' argument is
+## What the `name' argument is
 In the Rails' log you may see queries like this:
 ```
 User Load (22.6ms)  SELECT `users`.* FROM `users` WHERE `users`.`name` = 'Issei Naruta'
 ```
 Then `"User Load"` is the `name`.
 
-## Architecture
+# Architecture
 Without Arproxy:
 
 ```
@@ -61,7 +61,7 @@ end
 +-------------------------+        +----------+   +----------+   +------------------+
 ```
 
-## Supported Environments
+# Supported Environments
 
 Arproxy supports the following databases and adapters:
 
@@ -87,8 +87,8 @@ We have tested with the following versions of Ruby, ActiveRecord, and databases:
 - SQLServer
   - `2022`
 
-## Examples
-### Slow Query Logger
+# Examples
+## Slow Query Logger
 ```ruby
 class SlowQueryLogger < Arproxy::Base
   def initialize(slow_ms)
@@ -110,7 +110,7 @@ Arproxy.configure do |config|
 end
 ```
 
-### Adding Comments to SQLs
+## Adding Comments to SQLs
 ```ruby
 class CommentAdder < Arproxy::Base
   def execute(sql, name=nil)
@@ -120,7 +120,7 @@ class CommentAdder < Arproxy::Base
 end
 ```
 
-### Readonly Access
+## Readonly Access
 ```ruby
 class Readonly < Arproxy::Base
   def execute(sql, name=nil)
@@ -134,7 +134,7 @@ class Readonly < Arproxy::Base
 end
 ```
 
-## Use plug-in
+# Use plug-in
 
 ```ruby
 # any_gem/lib/arproxy/plugin/my_plugin
@@ -155,9 +155,9 @@ Arproxy.configure do |config|
 end
 ```
 
-## Development
+# Development
 
-### Setup
+## Setup
 
 ```
 $ git clone https://github.com/cookpad/arproxy.git
@@ -166,7 +166,7 @@ $ bundle install
 $ bundle exec appraisal install
 ```
 
-### Run test
+## Run test
 
 To run all tests with all supported versions of ActiveRecord:
 
@@ -183,6 +183,6 @@ or
 $ BUNDLE_GEMFILE=gemfiles/ar_7.1.gemfile bundle exec rspec
 ```
 
-## License
+# License
 Arproxy is released under the MIT license:
 * www.opensource.org/licenses/MIT
