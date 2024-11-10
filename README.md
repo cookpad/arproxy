@@ -84,6 +84,8 @@ We have tested with the following versions of Ruby, ActiveRecord, and databases:
   - `9.0`
 - PostgreSQL
   - `17`
+- SQLite
+  - `3.x` (not specified)
 - SQLServer
   - `2022`
 
