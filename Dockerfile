@@ -10,6 +10,7 @@ COPY arproxy.gemspec arproxy.gemspec
 COPY Gemfile Gemfile
 COPY Appraisals Appraisals
 COPY .env .env
+COPY .rspec .rspec
 
 RUN apt update
 RUN apt install -y build-essential freetds-dev
