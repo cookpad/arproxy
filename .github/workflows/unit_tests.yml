@@ -27,4 +27,4 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
     - name: Run unit tests on ruby-${{ matrix.ruby-version }}
-      run: bundle exec rspec spec/*_spec.rb
+      run: bundle exec rspec spec/unit/*_spec.rb

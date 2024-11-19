@@ -1,4 +1,4 @@
-require_relative '../spec_helper'
+require_relative './spec_helper'
 
 context "SQLite3 (AR#{ar_version})" do
   before(:all) do

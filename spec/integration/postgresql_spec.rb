@@ -1,4 +1,4 @@
-require_relative '../spec_helper'
+require_relative './spec_helper'
 
 context "PostgreSQL (AR#{ar_version})" do
   before(:all) do

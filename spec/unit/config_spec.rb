@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative './spec_helper'
 
 describe Arproxy::Config do
   describe '#adapter default value' do

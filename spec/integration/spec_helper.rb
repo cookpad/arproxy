@@ -1,10 +1,8 @@
 require 'arproxy'
 require 'active_record'
 require 'dotenv/load'
-require_relative './integration/shared_examples/custom_proxies'
-require_relative './integration/shared_examples/active_record_functions'
-
-Arproxy.logger.level = Logger::WARN unless ENV['DEBUG']
+require_relative './shared_examples/custom_proxies'
+require_relative './shared_examples/active_record_functions'
 
 def ar_version
   "#{ActiveRecord::VERSION::MAJOR}.#{ActiveRecord::VERSION::MINOR}"

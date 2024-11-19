@@ -1,4 +1,4 @@
-require_relative '../spec_helper'
+require_relative './spec_helper'
 require 'trilogy'
 
 context "Trilogy (AR#{ar_version})", if: ActiveRecord.version >= '7.1' do
