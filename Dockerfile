@@ -13,7 +13,7 @@ COPY .env .env
 COPY .rspec .rspec
 
 RUN apt update
-RUN apt install -y build-essential freetds-dev
+RUN apt install --no-install-recommends -y build-essential freetds-dev
 
 RUN bundle install
 RUN bundle exec appraisal install
