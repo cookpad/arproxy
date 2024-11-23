@@ -1,11 +1,13 @@
+require_relative './chain_tail'
+require_relative './connection_adapter_patch'
+
 module Arproxy
-  autoload :ChainTail, "arproxy/chain_tail"
-
   class ProxyChain
-    attr_reader :head, :tail
+    attr_reader :head, :tail, :patch
 
-    def initialize(config)
+    def initialize(config, patch)
       @config = config
+      @patch = patch
       setup
     end
 
@@ -28,22 +30,11 @@ module Arproxy
     end
 
     def enable!
-      @config.adapter_class.class_eval do
-        def execute_with_arproxy(sql, name=nil, **kwargs)
-          ::Arproxy.proxy_chain.connection = self
-          ::Arproxy.proxy_chain.head.execute sql, name, **kwargs
-        end
-        alias_method :execute_without_arproxy, :execute
-        alias_method :execute, :execute_with_arproxy
-        ::Arproxy.logger.debug("Arproxy: Enabled")
-      end
+      @patch.enable!
     end
 
     def disable!
-      @config.adapter_class.class_eval do
-        alias_method :execute, :execute_without_arproxy
-        ::Arproxy.logger.debug("Arproxy: Disabled")
-      end
+      @patch.disable!
     end
 
     def connection
@@ -53,6 +44,5 @@ module Arproxy
     def connection=(val)
       Thread.current[:arproxy_connection] = val
     end
-
   end
 end

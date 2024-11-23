@@ -1,0 +1,33 @@
+name: Integration tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    strategy:
+      matrix:
+        appraisal:
+          - ar-6.1
+          - ar-7.0
+          - ar-7.1
+          - ar-7.2
+          - ar-8.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose up
+        run: docker compose -f compose-ci.yaml up -d
+      - name: Run integration test
+        run: docker compose -f compose-ci.yaml exec ruby bundle exec appraisal ${{ matrix.appraisal }} rspec spec/integration/*_spec.rb
