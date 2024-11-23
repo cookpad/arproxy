@@ -20,6 +20,7 @@ jobs:
           - ar-7.0
           - ar-7.1
           - ar-7.2
+          - ar-8.0
     steps:
       - uses: actions/checkout@v4
       - name: docker compose up
