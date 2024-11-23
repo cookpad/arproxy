@@ -92,27 +92,6 @@ We have tested with the following versions of Ruby, ActiveRecord, and databases:
   - `2022`
 
 # Examples
-## Slow Query Logger
-```ruby
-class SlowQueryLogger < Arproxy::Base
-  def initialize(slow_ms)
-    @slow_ms = slow_ms
-  end
-
-  def execute(sql, name=nil)
-    result = nil
-    ms = Benchmark.ms { result = super(sql, name) }
-    if ms >= @slow_ms
-      Rails.logger.info "Slow(#{ms.to_i}ms): #{sql}"
-    end
-    result
-  end
-end
-
-Arproxy.configure do |config|
-  config.use SlowQueryLogger, 1000
-end
-```
 
 ## Adding Comments to SQLs
 ```ruby
@@ -120,20 +99,6 @@ class CommentAdder < Arproxy::Base
   def execute(sql, name=nil)
     sql += ' /*this_is_comment*/'
     super(sql, name)
-  end
-end
-```
-
-## Readonly Access
-```ruby
-class Readonly < Arproxy::Base
-  def execute(sql, name=nil)
-    if sql =~ /^(SELECT|SET|SHOW|DESCRIBE)\b/
-      super sql, name
-    else
-      Rails.logger.warn "#{name} (BLOCKED) #{sql}"
-      nil # return nil to block the query
-    end
   end
 end
 ```
