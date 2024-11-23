@@ -1,4 +1,6 @@
-[![Build Status](https://github.com/cookpad/arproxy/actions/workflows/ruby.yml/badge.svg)](https://github.com/cookpad/arproxy/actions)
+[![Integration tests](https://github.com/cookpad/arproxy/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/cookpad/arproxy/actions/workflows/integration_tests.yml)
+[![Unit tests](https://github.com/cookpad/arproxy/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/cookpad/arproxy/actions/workflows/unit_tests.yml)
+[![Rubocop](https://github.com/cookpad/arproxy/actions/workflows/rubocop.yml/badge.svg)](https://github.com/cookpad/arproxy/actions/workflows/rubocop.yml)
 
 # Arproxy
 Arproxy is a library that can intercept SQL queries executed by ActiveRecord to log them or modify the queries themselves.
