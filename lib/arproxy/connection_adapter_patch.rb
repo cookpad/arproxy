@@ -15,7 +15,10 @@ module Arproxy
       }
     end
 
-    if ActiveRecord.version >= Gem::Version.new('7.0')
+    if ActiveRecord.version >= Gem::Version.new('8.0')
+      register_patches('Mysql2', patches: [], binds_patches: [:raw_execute])
+      register_patches('Trilogy', patches: [], binds_patches: [:raw_execute])
+    elsif ActiveRecord.version >= Gem::Version.new('7.0')
       register_patches('Mysql2', patches: [:raw_execute], binds_patches: [])
       register_patches('Trilogy', patches: [:raw_execute], binds_patches: [])
     else
@@ -23,7 +26,11 @@ module Arproxy
       register_patches('Trilogy', patches: [:raw_execute], binds_patches: [])
     end
 
-    if ActiveRecord.version >= Gem::Version.new('7.1')
+    if ActiveRecord.version >= Gem::Version.new('8.0')
+      register_patches('PostgreSQL', patches: [], binds_patches: [:raw_execute])
+      register_patches('SQLServer', patches: [], binds_patches: [:raw_execute])
+      register_patches('SQLite', patches: [], binds_patches: [:raw_execute])
+    elsif ActiveRecord.version >= Gem::Version.new('7.1')
       register_patches('PostgreSQL', patches: [:raw_execute], binds_patches: [:exec_no_cache, :exec_cache])
       register_patches('SQLServer', patches: [:raw_execute], binds_patches: [:internal_exec_query])
       register_patches('SQLite', patches: [:raw_execute], binds_patches: [:internal_exec_query])

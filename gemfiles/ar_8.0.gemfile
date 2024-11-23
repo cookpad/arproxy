@@ -12,6 +12,6 @@ gem "mysql2"
 gem "pg"
 gem "activerecord-sqlserver-adapter"
 gem "trilogy"
-gem "sqlite3", "~> 2.0"
+gem "sqlite3", "~> 2.1"
 
 gemspec path: "../"

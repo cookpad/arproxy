@@ -50,5 +50,5 @@ appraise 'ar-8.0' do
   gem 'pg'
   gem 'activerecord-sqlserver-adapter'
   gem 'trilogy'
-  gem 'sqlite3', '~> 2.0'
+  gem 'sqlite3', '~> 2.1'
 end
