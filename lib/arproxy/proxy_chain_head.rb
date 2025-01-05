@@ -1,0 +1,27 @@
+require_relative './query_context'
+require_relative './proxy'
+
+module Arproxy
+  class ProxyChainHead < Proxy
+    def execute_head_with_binds(execute_method_name, sql, name = nil, binds = [], **kwargs)
+      context = QueryContext.new(
+        execute_method_name: execute_method_name,
+        with_binds: true,
+        name: name,
+        binds: binds,
+        kwargs: kwargs,
+      )
+      execute(sql, context)
+    end
+
+    def execute_head(execute_method_name, sql, name = nil, **kwargs)
+      context = QueryContext.new(
+        execute_method_name: execute_method_name,
+        with_binds: false,
+        name: name,
+        kwargs: kwargs,
+      )
+      execute(sql, context)
+    end
+  end
+end
