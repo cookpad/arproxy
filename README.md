@@ -9,11 +9,11 @@ Arproxy is a library that can intercept SQL queries executed by ActiveRecord to 
 Create your custom proxy and add its configuration in your Rails' `config/initializers/` directory:
 
 ```ruby
-class QueryTracer < Arproxy::Base
-  def execute(sql, name=nil)
+class QueryTracer < Arproxy::Proxy
+  def execute(sql, context)
     Rails.logger.debug sql
     Rails.logger.debug caller(1).join("\n")
-    super(sql, name)
+    super(sql, context)
   end
 end
 
@@ -93,12 +93,48 @@ We have tested with the following versions of Ruby, ActiveRecord, and databases:
 
 # Examples
 
+## Slow Query Logger
+```ruby
+class SlowQueryLogger < Arproxy::Proxy
+  def initialize(slow_ms)
+    @slow_ms = slow_ms
+  end
+
+  def execute(sql, context)
+    result = nil
+    ms = Benchmark.ms { result = super(sql, context) }
+    if ms >= @slow_ms
+      Rails.logger.info "Slow(#{ms.to_i}ms): #{sql}"
+    end
+    result
+  end
+end
+
+Arproxy.configure do |config|
+  config.use SlowQueryLogger, 1000
+end
+```
+
 ## Adding Comments to SQLs
 ```ruby
-class CommentAdder < Arproxy::Base
-  def execute(sql, name=nil)
+class CommentAdder < Arproxy::Proxy
+  def execute(sql, context)
     sql += ' /*this_is_comment*/'
-    super(sql, name)
+    super(sql, context)
+  end
+end
+```
+
+## Readonly Access
+```ruby
+class Readonly < Arproxy::Proxy
+  def execute(sql, context)
+    if sql =~ /^(SELECT|SET|SHOW|DESCRIBE)\b/
+      super(sql, context)
+    else
+      Rails.logger.warn "#{context.name} (BLOCKED) #{sql}"
+      nil # return nil to block the query
+    end
   end
 end
 ```
@@ -108,11 +144,12 @@ end
 ```ruby
 # any_gem/lib/arproxy/plugin/my_plugin
 module Arproxy::Plugin
-  class MyPlugin < Arproxy::Base
+  class MyPlugin < Arproxy::Proxy
     Arproxy::Plugin.register(:my_plugin, self)
 
-    def execute(sql, name=nil)
+    def execute(sql, context)
       # Any processing
+      super(sql, context)
     end
   end
 end
@@ -145,8 +182,8 @@ class MyProxy < Arproxy::Base
 end
 
 # >= v1.0.0
-class MyProxy < Arproxy::Base
-  def execute(sql, name=nil)
+class MyProxy < Arproxy::Proxy
+  def execute(sql, context)
     super
   end
 end
