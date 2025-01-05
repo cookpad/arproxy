@@ -1,5 +1,5 @@
 module Arproxy
-  class ConnectionAdapterPatch
+  class LegacyConnectionAdapterPatch
     attr_reader :adapter_class
 
     def initialize(adapter_class)

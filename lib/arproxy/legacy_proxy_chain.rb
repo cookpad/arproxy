@@ -1,8 +1,8 @@
-require_relative './chain_tail'
-require_relative './connection_adapter_patch'
+require_relative './legacy_chain_tail'
+require_relative './legacy_connection_adapter_patch'
 
 module Arproxy
-  class ProxyChain
+  class LegacyProxyChain
     attr_reader :head, :tail, :patch
 
     def initialize(config, patch)
@@ -12,7 +12,7 @@ module Arproxy
     end
 
     def setup
-      @tail = ChainTail.new self
+      @tail = LegacyChainTail.new self
       @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
         proxy = cls.new(*options)

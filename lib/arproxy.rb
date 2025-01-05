@@ -1,7 +1,7 @@
 require 'logger'
 require 'arproxy/base'
 require 'arproxy/config'
-require 'arproxy/proxy_chain'
+require 'arproxy/legacy_proxy_chain'
 require 'arproxy/error'
 require 'arproxy/plugin'
 
@@ -31,8 +31,8 @@ module Arproxy
         raise Arproxy::Error, 'Arproxy has not been configured'
       end
 
-      @patch = ConnectionAdapterPatch.new(@config.adapter_class)
-      @proxy_chain = ProxyChain.new(@config, @patch)
+      @patch = LegacyConnectionAdapterPatch.new(@config.adapter_class)
+      @proxy_chain = LegacyProxyChain.new(@config, @patch)
       @proxy_chain.enable!
 
       @enabled = true

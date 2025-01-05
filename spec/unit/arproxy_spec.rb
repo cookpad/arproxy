@@ -34,7 +34,7 @@ describe Arproxy do
           { sql: sql, name: name, binds: binds, kwargs: kwargs }
         end
       end
-      Arproxy::ConnectionAdapterPatch.register_patches('Dummy', patches: [:execute1], binds_patches: [:execute2])
+      Arproxy::LegacyConnectionAdapterPatch.register_patches('Dummy', patches: [:execute1], binds_patches: [:execute2])
     end
   end
 
