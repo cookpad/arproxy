@@ -1,9 +1,5 @@
 module Arproxy
+  # This class is no longer used since Arproxy v2.
   class Base
-    attr_accessor :proxy_chain, :next_proxy
-
-    def execute(sql, name=nil)
-      next_proxy.execute sql, name
-    end
   end
 end

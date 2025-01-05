@@ -1,13 +1,13 @@
 require 'arproxy/plugin'
 
-class QueryLogger < Arproxy::Base
+class QueryLogger < Arproxy::Proxy
   Arproxy::Plugin.register(:query_logger, self)
 
-  def execute(sql, name = nil)
+  def execute(sql, context)
     @@log ||= []
     @@log << sql
     if ENV['DEBUG']
-      puts "QueryLogger: [#{name}] #{sql}"
+      puts "QueryLogger: [#{context.name}] #{sql}"
     end
     super
   end

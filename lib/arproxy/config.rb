@@ -1,5 +1,7 @@
 require 'active_record'
 require 'active_record/base'
+require_relative './base'
+require_relative './error'
 
 module Arproxy
   class Config
@@ -14,12 +16,23 @@ module Arproxy
     end
 
     def use(proxy_class, *options)
+      if proxy_class.is_a?(Class) && proxy_class.ancestors.include?(Arproxy::Base)
+        # TODO: Add a migration guide URL
+        raise Arproxy::Error, "Error on loading a proxy `#{proxy_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v2. Use `Arproxy::Proxy` instead."
+      end
+
       ::Arproxy.logger.debug("Arproxy: Mounting #{proxy_class.inspect} (#{options.inspect})")
       @proxies << [proxy_class, options]
     end
 
     def plugin(name, *options)
       plugin_class = Plugin.get(name)
+
+      if plugin_class.is_a?(Class) && plugin_class.ancestors.include?(Arproxy::Base)
+        # TODO: Add a migration guide URL
+        raise Arproxy::Error, "Error on loading a plugin `#{plugin_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v2. Use `Arproxy::Proxy` instead."
+      end
+
       use(plugin_class, *options)
     end
 

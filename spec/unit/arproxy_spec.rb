@@ -5,19 +5,37 @@ describe Arproxy do
     allow(Arproxy).to receive(:logger) { Logger.new('/dev/null') }
   end
 
-  class ProxyA < Arproxy::Base
+  class LegacyProxyA < Arproxy::Base
     def execute(sql, name)
       super "#{sql}_A", "#{name}_A"
     end
   end
 
-  class ProxyB < Arproxy::Base
+  class LegacyProxyB < Arproxy::Base
     def initialize(opt=nil)
       @opt = opt
     end
 
     def execute(sql, name)
       super "#{sql}_B#{@opt}", "#{name}_B#{@opt}"
+    end
+  end
+
+  class ProxyA < Arproxy::Proxy
+    def execute(sql, context)
+      context.name = "#{context.name}_A"
+      super "#{sql}_A", context
+    end
+  end
+
+  class ProxyB < Arproxy::Proxy
+    def initialize(opt=nil)
+      @opt = opt
+    end
+
+    def execute(sql, context)
+      context.name = "#{context.name}_B#{@opt}"
+      super "#{sql}_B#{@opt}", context
     end
   end
 
@@ -34,7 +52,7 @@ describe Arproxy do
           { sql: sql, name: name, binds: binds, kwargs: kwargs }
         end
       end
-      Arproxy::LegacyConnectionAdapterPatch.register_patches('Dummy', patches: [:execute1], binds_patches: [:execute2])
+      Arproxy::ConnectionAdapterPatch.register_patches('Dummy', patches: [:execute1], binds_patches: [:execute2])
     end
   end
 
@@ -96,10 +114,10 @@ describe Arproxy do
   end
 
   context 'with a proxy that returns nil' do
-    class ReadonlyAccess < Arproxy::Base
-      def execute(sql, name)
+    class ReadonlyAccess < Arproxy::Proxy
+      def execute(sql, context)
         if sql =~ /^(SELECT)\b/
-          super sql, name
+          super sql, context
         else
           nil
         end
@@ -202,31 +220,6 @@ describe Arproxy do
       ).to eq(
         { sql: 'SQL /* options: [:option_a, :option_b] */', name: 'NAME_PLUGIN', kwargs: {} }
       )
-    end
-  end
-
-  context 'ProxyChain thread-safety' do
-    class ProxyWithConnectionId < Arproxy::Base
-      def execute(sql, name)
-        sleep 0.1
-        super "#{sql} /* connection_id=#{self.proxy_chain.connection.object_id} */", name
-      end
-    end
-
-    before do
-      Arproxy.clear_configuration
-      Arproxy.configure do |config|
-        config.adapter = 'dummy'
-        config.use ProxyWithConnectionId
-      end
-      Arproxy.enable!
-    end
-
-    context 'with two threads' do
-      let!(:thr1) { Thread.new { connection.dup.execute1 'SELECT 1' } }
-      let!(:thr2) { Thread.new { connection.dup.execute1 'SELECT 1' } }
-
-      it { expect(thr1.value).not_to eq(thr2.value) }
     end
   end
 end

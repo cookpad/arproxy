@@ -23,12 +23,15 @@ describe Arproxy::Proxy do
       end
     end
 
-    conn = DummyConnectionAdapter.new
-    tail = Arproxy::ProxyChainTail.new(conn)
-    p2 = Proxy2.new(tail)
-    p1 = Proxy1.new(p2)
-    head = Arproxy::ProxyChainHead.new(p1)
+    tail = Arproxy::ProxyChainTail.new
+    p2 = Proxy2.new
+    p2.next_proxy = tail
+    p1 = Proxy1.new
+    p1.next_proxy = p2
+    head = Arproxy::ProxyChainHead.new
+    head.next_proxy = p1
 
-    expect(head.execute_head_with_binds('execute', 'SELECT 1', 'test', [1])).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+    conn = DummyConnectionAdapter.new
+    expect(head.execute_head_with_binds(conn, 'execute', 'SELECT 1', 'test', [1])).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
   end
 end

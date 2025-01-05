@@ -1,13 +1,14 @@
 module Arproxy::Plugin
-  class TestPlugin < Arproxy::Base
+  class TestPlugin < Arproxy::Proxy
     Arproxy::Plugin.register(:test_plugin, self)
 
     def initialize(*options)
       @options = options
     end
 
-    def execute(sql, name=nil)
-      super("#{sql} /* options: #{@options.inspect} */", "#{name}_PLUGIN")
+    def execute(sql, context)
+      context.name = "#{context.name}_PLUGIN"
+      super("#{sql} /* options: #{@options.inspect} */", context)
     end
   end
 end
