@@ -137,6 +137,50 @@ describe Arproxy do
     it { expect(connection.execute1('UPDATE foo SET bar = 1', 'NAME')).to eq(nil) }
   end
 
+  context 'with a legacy proxy' do
+    class LegacyProxy < Arproxy::Base
+      def execute(sql, name)
+        super("#{sql} /* legacy_proxy */", name)
+      end
+    end
+
+    before do
+      Arproxy.clear_configuration
+    end
+
+    it 'raises an error' do
+      expect {
+        Arproxy.configure do |config|
+          config.adapter = 'dummy'
+          config.use LegacyProxy
+        end
+      }.to raise_error(Arproxy::Error, /Use `Arproxy::Proxy` instead/)
+    end
+  end
+
+  context 'calls #execute with an String argument instead of `context`' do
+    class WrongProxy < Arproxy::Proxy
+      def execute(sql, context)
+        super("#{sql} /* my_proxy */", "name=#{context.name}")
+      end
+    end
+
+    before do
+      Arproxy.clear_configuration
+      Arproxy.configure do |config|
+        config.adapter = 'dummy'
+        config.use WrongProxy
+      end
+      Arproxy.enable!
+    end
+
+    it do
+      expect {
+        connection.execute1('SQL', 'NAME')
+      }.to raise_error(Arproxy::Error, /expected a `Arproxy::QueryContext`/)
+    end
+  end
+
   context do
     before do
       Arproxy.clear_configuration
@@ -220,6 +264,21 @@ describe Arproxy do
       ).to eq(
         { sql: 'SQL /* options: [:option_a, :option_b] */', name: 'NAME_PLUGIN', kwargs: {} }
       )
+    end
+  end
+
+  context 'use a legacy plugin' do
+    before do
+      Arproxy.clear_configuration
+    end
+
+    it 'raises an error' do
+      expect {
+        Arproxy.configure do |config|
+          config.adapter = 'dummy'
+          config.plugin :legacy_plugin
+        end
+      }.to raise_error(Arproxy::Error, /Use `Arproxy::Proxy` instead/)
     end
   end
 end

@@ -3,8 +3,8 @@ require 'arproxy/proxy_chain_head'
 require 'arproxy/proxy_chain_tail'
 require 'arproxy/proxy'
 
-describe Arproxy::Proxy do
-  it do
+describe Arproxy::ProxyChainHead do
+  before(:all) do
     class DummyConnectionAdapter
       def execute(sql, name = nil, binds = [], **kwargs)
         "#{sql}"
@@ -28,10 +28,21 @@ describe Arproxy::Proxy do
     p2.next_proxy = tail
     p1 = Proxy1.new
     p1.next_proxy = p2
-    head = Arproxy::ProxyChainHead.new
-    head.next_proxy = p1
+    @head = Arproxy::ProxyChainHead.new
+    @head.next_proxy = p1
 
-    conn = DummyConnectionAdapter.new
-    expect(head.execute_head_with_binds(conn, 'execute', 'SELECT 1', 'test', [1])).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+    @conn = DummyConnectionAdapter.new
+  end
+
+  describe '#execute_head_with_binds' do
+    it do
+      expect(@head.execute_head_with_binds(@conn, 'execute', 'SELECT 1', 'test', [1])).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+    end
+  end
+
+  describe '#execute_head' do
+    it do
+      expect(@head.execute_head(@conn, 'execute', 'SELECT 1', 'test')).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+    end
   end
 end
