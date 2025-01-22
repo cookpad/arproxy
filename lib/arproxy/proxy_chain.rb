@@ -1,4 +1,3 @@
-require 'arproxy/proxy_chain_head'
 require 'arproxy/proxy_chain_tail'
 require 'arproxy/connection_adapter_patch'
 
@@ -14,14 +13,12 @@ module Arproxy
 
     def setup
       @tail = ProxyChainTail.new
-      head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
+      @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
         proxy = cls.new(*options)
         proxy.next_proxy = next_proxy
         proxy
       end
-      @head = ProxyChainHead.new
-      @head.next_proxy = head
     end
     private :setup
 

@@ -1,9 +1,9 @@
 require_relative './spec_helper'
-require 'arproxy/proxy_chain_head'
 require 'arproxy/proxy_chain_tail'
 require 'arproxy/proxy'
+require 'arproxy/query_context'
 
-describe Arproxy::ProxyChainHead do
+describe Arproxy::Proxy do
   before(:all) do
     class DummyConnectionAdapter
       def execute(sql, name = nil, binds = [], **kwargs)
@@ -28,21 +28,26 @@ describe Arproxy::ProxyChainHead do
     p2.next_proxy = tail
     p1 = Proxy1.new
     p1.next_proxy = p2
-    @head = Arproxy::ProxyChainHead.new
-    @head.next_proxy = p1
+    @head = p1
 
     @conn = DummyConnectionAdapter.new
   end
 
-  describe '#execute_head_with_binds' do
-    it do
-      expect(@head.execute_head_with_binds(@conn, 'execute', 'SELECT 1', 'test', [1])).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+  context 'with binds' do
+    let(:context) { Arproxy::QueryContext.new(raw_connection: @conn, execute_method_name: 'execute', with_binds: true, name: 'test', binds: [1]) }
+    describe '#execute' do
+      it do
+        expect(@head.execute('SELECT 1', context)).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+      end
     end
   end
 
-  describe '#execute_head' do
-    it do
-      expect(@head.execute_head(@conn, 'execute', 'SELECT 1', 'test')).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+  context 'without binds' do
+    let(:context) { Arproxy::QueryContext.new(raw_connection: @conn, execute_method_name: 'execute', with_binds: false, name: 'test') }
+    describe '#execute' do
+      it do
+        expect(@head.execute('SELECT 1', context)).to eq('SELECT 1 /* Proxy1 */ /* Proxy2 */')
+      end
     end
   end
 end

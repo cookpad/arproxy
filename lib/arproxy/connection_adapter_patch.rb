@@ -77,7 +77,14 @@ module Arproxy
           patched_execute_method_name = :"#{target_method}_with_arproxy"
           break if instance_methods.include?(patched_execute_method_name)
           define_method(patched_execute_method_name) do |sql, name=nil, **kwargs|
-            ::Arproxy.proxy_chain.head.execute_head(self, raw_execute_method_name, sql, name, **kwargs)
+            context = QueryContext.new(
+              raw_connection: self,
+              execute_method_name: raw_execute_method_name,
+              with_binds: false,
+              name: name,
+              kwargs: kwargs,
+            )
+            ::Arproxy.proxy_chain.head.execute(sql, context)
           end
           alias_method raw_execute_method_name, target_method
           alias_method target_method, patched_execute_method_name
@@ -92,7 +99,15 @@ module Arproxy
           patched_execute_method_name = :"#{target_method}_with_arproxy"
           break if instance_methods.include?(patched_execute_method_name)
           define_method(patched_execute_method_name) do |sql, name=nil, binds=[], **kwargs|
-            ::Arproxy.proxy_chain.head.execute_head_with_binds(self, raw_execute_method_name, sql, name, binds, **kwargs)
+            context = QueryContext.new(
+              raw_connection: self,
+              execute_method_name: raw_execute_method_name,
+              with_binds: true,
+              name: name,
+              binds: binds,
+              kwargs: kwargs,
+            )
+            ::Arproxy.proxy_chain.head.execute(sql, context)
           end
           alias_method raw_execute_method_name, target_method
           alias_method target_method, patched_execute_method_name
