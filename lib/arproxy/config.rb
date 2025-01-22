@@ -17,8 +17,7 @@ module Arproxy
 
     def use(proxy_class, *options)
       if proxy_class.is_a?(Class) && proxy_class.ancestors.include?(Arproxy::Base)
-        # TODO: Add a migration guide URL
-        raise Arproxy::Error, "Error on loading a proxy `#{proxy_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v1. Use `Arproxy::Proxy` instead."
+        raise Arproxy::Error, "Error on loading a proxy `#{proxy_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v1. Use `Arproxy::Proxy` instead. See: https://github.com/cookpad/arproxy/blob/main/UPGRADING.md"
       end
 
       ::Arproxy.logger.debug("Arproxy: Mounting #{proxy_class.inspect} (#{options.inspect})")
@@ -29,8 +28,7 @@ module Arproxy
       plugin_class = Plugin.get(name)
 
       if plugin_class.is_a?(Class) && plugin_class.ancestors.include?(Arproxy::Base)
-        # TODO: Add a migration guide URL
-        raise Arproxy::Error, "Error on loading a plugin `#{plugin_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v1. Use `Arproxy::Proxy` instead."
+        raise Arproxy::Error, "Error on loading a plugin `#{plugin_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v1. Use `Arproxy::Proxy` instead. See: https://github.com/cookpad/arproxy/blob/main/UPGRADING.md"
       end
 
       use(plugin_class, *options)
