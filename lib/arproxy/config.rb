@@ -1,7 +1,7 @@
 require 'active_record'
 require 'active_record/base'
-require_relative './base'
-require_relative './error'
+require 'arproxy/base'
+require 'arproxy/error'
 
 module Arproxy
   class Config

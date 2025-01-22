@@ -1,5 +1,5 @@
-require_relative './query_context'
-require_relative './proxy'
+require 'arproxy/query_context'
+require 'arproxy/proxy'
 
 module Arproxy
   class ProxyChainHead < Proxy

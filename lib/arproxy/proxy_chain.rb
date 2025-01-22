@@ -1,6 +1,6 @@
-require_relative './proxy_chain_head'
-require_relative './proxy_chain_tail'
-require_relative './connection_adapter_patch'
+require 'arproxy/proxy_chain_head'
+require 'arproxy/proxy_chain_tail'
+require 'arproxy/connection_adapter_patch'
 
 module Arproxy
   class ProxyChain
