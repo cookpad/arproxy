@@ -1,9 +1,15 @@
 class Product < ActiveRecord::Base
 end
 
-class HelloProxy < Arproxy::Base
+class HelloLegacyProxy < Arproxy::Base
   def execute(sql, name = nil)
-    super("#{sql} -- Hello Arproxy!", name)
+    super("#{sql} -- Hello Legacy Arproxy!", name)
+  end
+end
+
+class HelloProxy < Arproxy::Proxy
+  def execute(sql, context)
+    super("#{sql} -- Hello Arproxy!", context)
   end
 end
 

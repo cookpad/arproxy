@@ -73,19 +73,21 @@ module Arproxy
       def apply_patch(target_method)
         return if @applied_patches.include?(target_method)
         adapter_class.class_eval do
-          break if instance_methods.include?(:"#{target_method}_with_arproxy")
-          define_method("#{target_method}_with_arproxy") do |sql, name=nil, **kwargs|
-            ::Arproxy.proxy_chain.connection = self
-            proxy_chain_result = ::Arproxy.proxy_chain.head.execute(sql, name)
-            if proxy_chain_result && proxy_chain_result.is_a?(Array)
-              _sql, _name = proxy_chain_result
-              self.send("#{target_method}_without_arproxy", _sql, _name, **kwargs)
-            else
-              nil
-            end
+          raw_execute_method_name = :"#{target_method}_without_arproxy"
+          patched_execute_method_name = :"#{target_method}_with_arproxy"
+          break if instance_methods.include?(patched_execute_method_name)
+          define_method(patched_execute_method_name) do |sql, name=nil, **kwargs|
+            context = QueryContext.new(
+              raw_connection: self,
+              execute_method_name: raw_execute_method_name,
+              with_binds: false,
+              name: name,
+              kwargs: kwargs,
+            )
+            ::Arproxy.proxy_chain.head.execute(sql, context)
           end
-          alias_method :"#{target_method}_without_arproxy", target_method
-          alias_method target_method, :"#{target_method}_with_arproxy"
+          alias_method raw_execute_method_name, target_method
+          alias_method target_method, patched_execute_method_name
         end
         @applied_patches << target_method
       end
@@ -93,18 +95,22 @@ module Arproxy
       def apply_patch_binds(target_method)
         return if @applied_patches.include?(target_method)
         adapter_class.class_eval do
-          define_method("#{target_method}_with_arproxy") do |sql, name=nil, binds=[], **kwargs|
-            ::Arproxy.proxy_chain.connection = self
-            proxy_chain_result = ::Arproxy.proxy_chain.head.execute(sql, name)
-            if proxy_chain_result && proxy_chain_result.is_a?(Array)
-              _sql, _name = proxy_chain_result
-              self.send("#{target_method}_without_arproxy", _sql, _name, binds, **kwargs)
-            else
-              nil
-            end
+          raw_execute_method_name = :"#{target_method}_without_arproxy"
+          patched_execute_method_name = :"#{target_method}_with_arproxy"
+          break if instance_methods.include?(patched_execute_method_name)
+          define_method(patched_execute_method_name) do |sql, name=nil, binds=[], **kwargs|
+            context = QueryContext.new(
+              raw_connection: self,
+              execute_method_name: raw_execute_method_name,
+              with_binds: true,
+              name: name,
+              binds: binds,
+              kwargs: kwargs,
+            )
+            ::Arproxy.proxy_chain.head.execute(sql, context)
           end
-          alias_method :"#{target_method}_without_arproxy", target_method
-          alias_method target_method, :"#{target_method}_with_arproxy"
+          alias_method raw_execute_method_name, target_method
+          alias_method target_method, patched_execute_method_name
         end
         @applied_patches << target_method
       end

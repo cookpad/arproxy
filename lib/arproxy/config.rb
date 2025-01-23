@@ -1,5 +1,7 @@
 require 'active_record'
 require 'active_record/base'
+require 'arproxy/base'
+require 'arproxy/error'
 
 module Arproxy
   class Config
@@ -14,12 +16,21 @@ module Arproxy
     end
 
     def use(proxy_class, *options)
+      if proxy_class.is_a?(Class) && proxy_class.ancestors.include?(Arproxy::Base)
+        raise Arproxy::Error, "Error on loading a proxy `#{proxy_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v1. Use `Arproxy::Proxy` instead. See: https://github.com/cookpad/arproxy/blob/main/UPGRADING.md"
+      end
+
       ::Arproxy.logger.debug("Arproxy: Mounting #{proxy_class.inspect} (#{options.inspect})")
       @proxies << [proxy_class, options]
     end
 
     def plugin(name, *options)
       plugin_class = Plugin.get(name)
+
+      if plugin_class.is_a?(Class) && plugin_class.ancestors.include?(Arproxy::Base)
+        raise Arproxy::Error, "Error on loading a plugin `#{plugin_class.inspect}`: the superclass `Arproxy::Base` is no longer supported since Arproxy v1. Use `Arproxy::Proxy` instead. See: https://github.com/cookpad/arproxy/blob/main/UPGRADING.md"
+      end
+
       use(plugin_class, *options)
     end
 

@@ -1,5 +1,5 @@
-require_relative './chain_tail'
-require_relative './connection_adapter_patch'
+require 'arproxy/proxy_chain_tail'
+require 'arproxy/connection_adapter_patch'
 
 module Arproxy
   class ProxyChain
@@ -12,11 +12,10 @@ module Arproxy
     end
 
     def setup
-      @tail = ChainTail.new self
+      @tail = ProxyChainTail.new
       @head = @config.proxies.reverse.inject(@tail) do |next_proxy, proxy_config|
         cls, options = proxy_config
         proxy = cls.new(*options)
-        proxy.proxy_chain = self
         proxy.next_proxy = next_proxy
         proxy
       end
@@ -35,14 +34,6 @@ module Arproxy
 
     def disable!
       @patch.disable!
-    end
-
-    def connection
-      Thread.current[:arproxy_connection]
-    end
-
-    def connection=(val)
-      Thread.current[:arproxy_connection] = val
     end
   end
 end

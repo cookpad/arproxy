@@ -1,6 +1,7 @@
 require 'logger'
 require 'arproxy/base'
 require 'arproxy/config'
+require 'arproxy/connection_adapter_patch'
 require 'arproxy/proxy_chain'
 require 'arproxy/error'
 require 'arproxy/plugin'
