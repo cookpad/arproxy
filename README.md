@@ -197,7 +197,7 @@ end
 
 # Upgrading guide from v0.x to v1
 
-See [UPGRADING.md](https://github.com/cookpad/arproxy/main/)
+See [UPGRADING.md](UPGRADING.md)
 
 # Development
 
